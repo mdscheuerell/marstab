@@ -1,0 +1,104 @@
+---
+title: "Stability properties for MAR(1) models"
+output: pdf_document
+fontsize: 10pt
+geometry: margin=1in
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\begin{center}
+\textit{Mark Scheuerell, NOAA Northwest Fisheries Science Center, Seattle, WA USA}
+\end{center}
+
+# Background
+
+There is growing interest in the use of first-order vector autoregressive, or VAR(1), models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models ($e.g.$, Ives $et$ $al$. 2003 $Ecological$ $Monographs$ 73:301–330).
+
+Assume a MAR(1) model of the general form
+
+$$
+\mathbf{x}_t = \mathbf{a} + \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{a}) + \mathbf{w}_t
+$$
+
+where $\mathbf{x}_t$ is an $n \times 1$ vector of states at time $t$, $\mathbf{a}$ is an $n \times 1$ vector of underlying levels (means) for each of the states, $\mathbf{B}$ is an $n \times n$ interaction matrix, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
+
+I note here that MAR(1) models are often used for zero-mean processes, in which case $\mathbf{a} = \mathbf{0}$. Alternatively, MAR(1) models may be embedded within a state-space framework, which adds an observation model to account for noisy and/or missing  data. In those so-called MARSS(1) models, any non-zero mean vector $\mathbf{a}$ is typically incorporated into the model for the observed data $\mathbf{y}_t$, such that
+
+\begin{gather*}
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t \\
+\mathbf{y}_t = \mathbf{a} + \mathbf{x}_t + \mathbf{v}_t,
+\end{gather*}
+
+and the observation errors, $\mathbf{v}_t$, are distributed as a multivariate normal with mean $\mathbf{0}$ and variance-covariance matrix $\mathbf{R}$.
+
+# Variance of the stationary distribution
+
+Regardless of the specific form, the discussion here is restricted to stationary process models wherein all of the eigenvalues of $\mathbf{B}$ lie within the unit circle. One of the many appeals of stationary MAR(1) models is that the variance-covariance matrix of the stationary distribution for $\mathbf{x}_t$ as $t \rightarrow \infty$ gives an indication of the relative stability of the system. 
+
+Recognizing that $t = t-1$ as $t \rightarrow \infty$, we can write
+
+$$
+\mathbf{x}_\infty = \mathbf{a} + \mathbf{B} (\mathbf{x}_\infty - \mathbf{a}) + \mathbf{w}_\infty,
+$$
+
+where
+
+$$
+\rm Var(\mathbf{x}_\infty) = Var(\mathbf{a}) + \mathbf{B} \big( Var(\mathbf{x}_\infty) - Var(\mathbf{a}) \big) \mathbf{B}^\top + Var(\mathbf{w}_\infty).
+$$
+
+If we define $\mathbf{\Omega} = \rm Var(\mathbf{x}_\infty)$, then
+
+\begin{align*}  
+\mathbf{\Omega} &= \mathbf{0} + \mathbf{B} \left( \mathbf{\Omega} - \mathbf{0} \right) \mathbf{B}^\top + \mathbf{Q} \\
+ &= \mathbf{B} \mathbf{\Omega} \mathbf{B}^\top + \mathbf{Q}.
+\end{align*}
+
+Unfortunately, however, there is no closed-form solution for $\mathbf{\Omega}$ when written in this form.
+
+## The $vec$ operator
+
+It turns out that we can use the $vec$ operator to derive an explicit solution for $\mathbf{\Omega}$. The $vec$ operator converts an $i \times j$ matrix into an $(ij) \times 1$ column vector. For example, if
+
+$$
+\mathbf{M} = 
+\begin{bmatrix}
+    1 & 3 \\
+    2 & 4
+\end{bmatrix},
+$$
+
+then
+
+$$
+vec(\mathbf{M}) = 
+\begin{bmatrix}
+    1 \\
+    2 \\
+    3 \\
+    4 
+\end{bmatrix}.
+$$
+
+## Solution
+
+Thus, if $\mathbf{I}$ is an $n \times n$ identity matrix, and we define $\mathcal{I} = (\mathbf{I} \otimes \mathbf{I})$ and $\mathcal{B} = (\mathbf{B} \otimes \mathbf{B})$, then
+
+$$
+vec(\mathbf{\Omega}) = (\mathcal{I} - \mathcal{B})^{-1} vec(\mathbf{Q}).
+$$
+
+# Contribution of species interactions to stability
+
+The matrices $\mathbf{\Omega}$ and $\mathbf{Q}$ are the variances of the stationary distribution and process errors, respectively. As such, we can use matrix determinants to measure the degree to which species interactions amplify the variance of the stationary distribution relative to the variance of the process error. Specifically, we want $\text{det}(\mathbf{\Omega} - \mathbf{Q})$.
+
+Looking back to the equation for the matrix form of the variance of the stationary distribution, we had
+
+$$
+\mathbf{\Omega} = \mathbf{B} \mathbf{\Omega} \mathbf{B}^\top + \mathbf{Q}.
+$$
+
+Thus, it follows that the 
