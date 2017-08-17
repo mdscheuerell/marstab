@@ -92,46 +92,57 @@ $$
 vec(\mathbf{\Sigma}) = (\mathcal{I} - \mathcal{B})^{-1} vec(\mathbf{Q}).
 $$
 
-# Contribution of species interactions to stability
+# Importance of species interactions to stability
 
-Among the many ways of classifying stability, we are interested in the extent to which community interactions, relative to environmental forcing, contribute to the overall variance of the stationary distribution. That is, when all of the community interactions are relatively weak, we would expect that the changes in the elements of $\mathbf{x}_t$ from $t$ to $t-1$ are driven almost entirely by random environmental variation ($i.e.$, the variance in $\mathbf{w}_t$).
+Among the many ways of classifying stability, I am interested in the extent to which community interactions, relative to environmental forcing, contribute to the overall variance of the stationary distribution. In a stable system, any perturbation affecting one or more of the community members does not amplify as it moves throughout the community as a whole, such that the variances in log-densities over time would be driven almost entirely by random environmental variation. Given that same magnitude of random environmental variation, less stable systems are characterized by greater variances in the temporal dynamics of their constituents.
 
-The matrices $\mathbf{\Sigma}$ and $\mathbf{Q}$ are the variances of the stationary distribution and process errors, respectively. Specifically, the volume of the difference $\mathbf{\Sigma} - \mathbf{Q}$ measures the degree to which species interactions increase
-the variance of the stationary distribution relative to the variance of the process error.
-
-We can use the determinants of those matrices to estimate the hyperdimensional "volume" that they occupy. 
-
-
-
-Looking back to the equation for the matrix form of the variance of the stationary distribution, where
+Here we will use determinants to measure the "volume" of a matrix. Looking back to the matrix form of the equation for the variance of the stationary distribution, we see that
 
 $$
 \mathbf{\Sigma} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}, \\
 $$
 
-we see that both the various community interactions contained in $\mathbf{B}$ and the variance in environmental forcing $\mathbf{Q}$ contribute to the variance of the stationary distribution.
-
-From this it follows that
-
-$$
-\mathbf{\Sigma} - \mathbf{Q} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top,
-$$
-
 and hence
 
+$$
+\mathbf{\Sigma} - \mathbf{Q} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top.
+$$
+
+Therefore, the volume of the difference $\mathbf{\Sigma} - \mathbf{Q}$ provides a measure of how much species interactions contribute to the variance of the stationary distribution. Taking determinants of both sides, we get
+
 \begin{align*}
-\text{det}(\mathbf{\Sigma} - \mathbf{Q}) &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B}^\top) \\
- &= \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B})^2. 
+\text{det}(\mathbf{\Sigma} - \mathbf{Q}) &= \text{det}(\mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top) \\
+ &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B}^\top) \\
+ &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B})  
 \end{align*}
 
-The proportion $\pi$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions is then
+The proportion $\pi_\mathbf{B}$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions is then
 
 $$
-\pi  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
+\pi_\mathbf{B}  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
 $$
 
 ## Intra- versus inter-specific interactions
 
-Now that we have a means for identifying the proportion of the volume of $\mathbf{\Sigma}$ attributable to species interactions, it would be nice to know what proportion 
+Now that we have a means for identifying the proportion $\pi_\mathbf{B}$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions, we can go further and compare the relative contribution of intra- versus inter-specific interactions. To do so, we will decompose $\mathbf{B}$ into 2 matrices representing the two kinds of interactions, such that
 
+$$
+\mathbf{B} = \mathbf{\Delta} + \mathbf{\Omega}.
+$$
 
+The matrix $\mathbf{\Delta}$ has density-dependent effects for each community member along the diagonal and zeroes elsewhere. The matrix $\mathbf{\Omega}$ contains zeroes along the diagonal and (potentially) non-zero entries in the off-diagonals. 
+
+We can again use determinants to measure the relative contributions of intra- $(\mathbf{\Delta})$ versus inter-specific $(\mathbf{\Omega})$ interactions to the volume of $\mathbf{B}$, where
+
+\begin{align*}
+\text{det}(\mathbf{B}) &= \text{det}(\mathbf{\Delta} + \mathbf{\Omega}) \\
+  &= \text{det}(\mathbf{\Delta}) \text{det}(\mathbf{I} + \mathbf{\Omega} \mathbf{\Delta}^{-1}).
+\end{align*}
+
+Therefore, the proportion $\pi_\mathbf{\Delta}$ of the volume of $\mathbf{B}$ attributable to density-dependent interactions is then
+
+$$
+\pi_\mathbf{\Delta}  = \frac{\text{det}(\mathbf{\Delta})}{\text{det}(\mathbf{B})} = \text{det}(\mathbf{I} + \mathbf{\Omega} \mathbf{\Delta}^{-1})^{-1},
+$$
+
+where $\mathbf{I}$ is again an $n \times n$ identity matrix. The proportion of the volume of $\mathbf{B}$ attributable to competition, predator-prey interactions, etc is then simply $\pi_\mathbf{\Omega} = 1 - \pi_\mathbf{\Delta}$.
