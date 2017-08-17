@@ -10,7 +10,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 \begin{center}
-\textit{Mark Scheuerell, NOAA Northwest Fisheries Science Center, Seattle, WA USA}
+\textbf{Mark D. Scheuerell} \\
+\text{Northwest Fisheries Science Center} \\
+\text{National Oceanic and Atmospheric Administration} \\
+\text{Seattle, WA USA} \\
+\text{mark.scheuerell@noaa.gov}
 \end{center}
 
 # Background
@@ -113,7 +117,7 @@ Therefore, the volume of the difference $\mathbf{\Sigma} - \mathbf{Q}$ provides 
 \begin{align*}
 \text{det}(\mathbf{\Sigma} - \mathbf{Q}) &= \text{det}(\mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top) \\
  &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B}^\top) \\
- &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B})  
+ &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B}).  
 \end{align*}
 
 The proportion $\pi_\mathbf{B}$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions is then
@@ -142,7 +146,29 @@ We can again use determinants to measure the relative contributions of intra- $(
 Therefore, the proportion $\pi_\mathbf{\Delta}$ of the volume of $\mathbf{B}$ attributable to density-dependent interactions is then
 
 $$
-\pi_\mathbf{\Delta}  = \frac{\text{det}(\mathbf{\Delta})}{\text{det}(\mathbf{B})} = \text{det}(\mathbf{I} + \mathbf{\Omega} \mathbf{\Delta}^{-1})^{-1},
+\pi_\mathbf{\Delta}  = \frac{\text{det}(\mathbf{\Delta})}{\text{det}(\mathbf{B})} = \frac{1}{\text{det}(\mathbf{I} + \mathbf{\Omega} \mathbf{\Delta}^{-1})},
 $$
 
 where $\mathbf{I}$ is again an $n \times n$ identity matrix. The proportion of the volume of $\mathbf{B}$ attributable to competition, predator-prey interactions, etc is then simply $\pi_\mathbf{\Omega} = 1 - \pi_\mathbf{\Delta}$.
+
+# An example
+
+As an example, I will fit a MARSS(1) model to some plankton data from Lake Washington (USA). These data were made publicly available by Dr. Daniel Schindler of the University of Washington, and they have been included with the `MARSS` package for \textbf{R}. In particular, I will focus on the time period from 1977 onward because \textit{Daphnia} species were largely absent from the water column prior to then.
+
+```{r load_data}
+library(MARSS)
+## load the data (2 datasets here)
+data(lakeWAplankton)
+## keep only 1977-
+raw <- as.data.frame(lakeWAplanktonRaw)
+dat <- subset(raw, Year>=1977)
+colnames(dat)
+## phytoplankton names (omitting bluegreens)
+phyto_names <- c("Cryptomonas", "Diatoms", "Greens", "Unicells", "Other.algae")
+## zooplankton names (omitting Leptodora & Neomysis)
+zoops_names <- c("Cyclops", "Diaptomus", "Epischura",   # copepods
+                 "Daphnia", "Non.daphnid.cladocerans",  # cladocerans
+                 "Conochilus", "Non.colonial.rotifers") # rotifers
+
+```
+
