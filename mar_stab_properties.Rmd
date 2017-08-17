@@ -2,7 +2,7 @@
 title: "Stability properties for MAR(1) models"
 output: pdf_document
 fontsize: 10pt
-geometry: margin=1in
+geometry: margin=1.25in
 ---
 
 ```{r setup, include=FALSE}
@@ -23,45 +23,46 @@ $$
 \mathbf{x}_t = \mathbf{a} + \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{a}) + \mathbf{w}_t
 $$
 
-where $\mathbf{x}_t$ is an $n \times 1$ vector of states at time $t$, $\mathbf{a}$ is an $n \times 1$ vector of underlying levels (means) for each of the states, $\mathbf{B}$ is an $n \times n$ interaction matrix, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
+where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{a}$ is an $n \times 1$ vector of underlying levels (means) for each of the states, $\mathbf{B}$ is an $n \times n$ interaction matrix, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
 
-I note here that MAR(1) models are often used for zero-mean processes, in which case $\mathbf{a} = \mathbf{0}$. Alternatively, MAR(1) models may be embedded within a state-space framework, which adds an observation model to account for noisy and/or missing  data. In those so-called MARSS(1) models, any non-zero mean vector $\mathbf{a}$ is typically incorporated into the model for the observed data $\mathbf{y}_t$, such that
+Of particular interest here is that the variance-covariance matrix of the stationary distribution for $\mathbf{x}_t$ as $t \rightarrow \infty$ gives an indication of the relative stability of the system. 
+
+## State-space form
+
+This MAR(1) model can be used within a state-space framework, wherein $\mathbf{a}$ is instead included as part of a second model for the observed data $\mathbf{y}$, such that
 
 \begin{gather*}
-\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t \\
-\mathbf{y}_t = \mathbf{a} + \mathbf{x}_t + \mathbf{v}_t,
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t, \\
+\mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t,
 \end{gather*}
 
-and the observation errors, $\mathbf{v}_t$, are distributed as a multivariate normal with mean $\mathbf{0}$ and variance-covariance matrix $\mathbf{R}$.
+and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors, the statistical distribution of which does not affect the variance of the stationary distribution.
 
 # Variance of the stationary distribution
 
-Regardless of the specific form, the discussion here is restricted to stationary process models wherein all of the eigenvalues of $\mathbf{B}$ lie within the unit circle. One of the many appeals of stationary MAR(1) models is that the variance-covariance matrix of the stationary distribution for $\mathbf{x}_t$ as $t \rightarrow \infty$ gives an indication of the relative stability of the system. 
-
-Recognizing that $t = t-1$ as $t \rightarrow \infty$, we can write
+We will restrict this treatment to stationary models wherein all of the eigenvalues of $\mathbf{B}$ lie within the unit circle. Because $t = (t-1)$ as $t \rightarrow \infty$, under assumptions of stationarity we can write the process equation from the above state-space model as
 
 $$
-\mathbf{x}_\infty = \mathbf{a} + \mathbf{B} (\mathbf{x}_\infty - \mathbf{a}) + \mathbf{w}_\infty,
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_t + \mathbf{w}_t.
 $$
 
-where
+From this, it follows that
 
 $$
-\rm Var(\mathbf{x}_\infty) = Var(\mathbf{a}) + \mathbf{B} \big( Var(\mathbf{x}_\infty) - Var(\mathbf{a}) \big) \mathbf{B}^\top + Var(\mathbf{w}_\infty).
+\rm Var(\mathbf{x}_t) = \mathbf{B} Var(\mathbf{x}_t) \mathbf{B}^\top + Var(\mathbf{w}_t).
 $$
 
-If we define $\mathbf{\Omega} = \rm Var(\mathbf{x}_\infty)$, then
+If we define $\mathbf{\Sigma} = \rm Var(\mathbf{x}_t)$, then
 
-\begin{align*}  
-\mathbf{\Omega} &= \mathbf{0} + \mathbf{B} \left( \mathbf{\Omega} - \mathbf{0} \right) \mathbf{B}^\top + \mathbf{Q} \\
- &= \mathbf{B} \mathbf{\Omega} \mathbf{B}^\top + \mathbf{Q}.
-\end{align*}
+$$  
+\mathbf{\Sigma} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}.
+$$
 
-Unfortunately, however, there is no closed-form solution for $\mathbf{\Omega}$ when written in this form.
+Thus, both the various community interactions contained in $\mathbf{B}$ and the variance in environmental forcing $\mathbf{Q}$ contribute to the variance of the stationary distribution. Unfortunately, however, there is no closed-form solution for $\mathbf{\Sigma}$ when written in this form.
 
 ## The $vec$ operator
 
-It turns out that we can use the $vec$ operator to derive an explicit solution for $\mathbf{\Omega}$. The $vec$ operator converts an $i \times j$ matrix into an $(ij) \times 1$ column vector. For example, if
+It turns out that we can use the $vec$ operator to derive an explicit solution for $\mathbf{\Sigma}$. The $vec$ operator converts an $i \times j$ matrix into an $(ij) \times 1$ column vector. For example, if
 
 $$
 \mathbf{M} = 
@@ -88,17 +89,43 @@ $$
 Thus, if $\mathbf{I}$ is an $n \times n$ identity matrix, and we define $\mathcal{I} = (\mathbf{I} \otimes \mathbf{I})$ and $\mathcal{B} = (\mathbf{B} \otimes \mathbf{B})$, then
 
 $$
-vec(\mathbf{\Omega}) = (\mathcal{I} - \mathcal{B})^{-1} vec(\mathbf{Q}).
+vec(\mathbf{\Sigma}) = (\mathcal{I} - \mathcal{B})^{-1} vec(\mathbf{Q}).
 $$
 
 # Contribution of species interactions to stability
 
-The matrices $\mathbf{\Omega}$ and $\mathbf{Q}$ are the variances of the stationary distribution and process errors, respectively. As such, we can use matrix determinants to measure the degree to which species interactions amplify the variance of the stationary distribution relative to the variance of the process error. Specifically, we want $\text{det}(\mathbf{\Omega} - \mathbf{Q})$.
+Among the many ways of classifying stability, we are interested in the extent to which community interactions, relative to environmental forcing, contribute to the overall variance of the stationary distribution. That is, when all of the community interactions are relatively weak, we would expect that the temporal evolution of $\mathbf{x}_t$ from $t$ to $t-1$ is driven almost entirely by random environmental variation ($i.e.$, the variance in $\mathbf{w}_t$).
 
-Looking back to the equation for the matrix form of the variance of the stationary distribution, we had
+The matrices $\mathbf{\Sigma}$ and $\mathbf{Q}$ are the variances of the stationary distribution and process errors, respectively. As such, we can use the determinants of those matrices to estimate the hyperdimensional "volume" that they occupy. 
+
+The second method for comparing the variance of
+probability distributions uses determinants to measure
+the ‘‘volume’’ of covariance matrices.
+
+Specifically, we want $\text{det}(\mathbf{\Sigma} - \mathbf{Q})$.
+
+Looking back to the equation for the matrix form of the variance of the stationary distribution, we see that
+
+\begin{align*}
+\mathbf{\Sigma} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q} \\
+\mathbf{\Sigma} - \mathbf{Q} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top.
+\end{align*}
+
+From this it follows that
+
+\begin{align*}
+\text{det}(\mathbf{\Sigma} - \mathbf{Q}) &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B}^\top) \\
+ &= \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B})^2. 
+\end{align*}
+
+The proportion $\pi$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions is then
 
 $$
-\mathbf{\Omega} = \mathbf{B} \mathbf{\Omega} \mathbf{B}^\top + \mathbf{Q}.
+\frac{\text{det}(\mathbf{\Sigma} - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
 $$
 
-Thus, it follows that the 
+## Intra- versus inter-specific interactions
+
+Now that we have a means for identifying the proportion of the volume of $\mathbf{\Sigma}$ attributable to species interactions, it would be nice to know what proportion 
+
+
