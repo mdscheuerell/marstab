@@ -58,7 +58,7 @@ $$
 \mathbf{\Sigma} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}.
 $$
 
-Thus, both the various community interactions contained in $\mathbf{B}$ and the variance in environmental forcing $\mathbf{Q}$ contribute to the variance of the stationary distribution. Unfortunately, however, there is no closed-form solution for $\mathbf{\Sigma}$ when written in this form.
+Unfortunately, however, there is no closed-form solution for $\mathbf{\Sigma}$ when written in this form.
 
 ## The $vec$ operator
 
@@ -94,7 +94,7 @@ $$
 
 # Contribution of species interactions to stability
 
-Among the many ways of classifying stability, we are interested in the extent to which community interactions, relative to environmental forcing, contribute to the overall variance of the stationary distribution. That is, when all of the community interactions are relatively weak, we would expect that the temporal evolution of $\mathbf{x}_t$ from $t$ to $t-1$ is driven almost entirely by random environmental variation ($i.e.$, the variance in $\mathbf{w}_t$).
+Among the many ways of classifying stability, we are interested in the extent to which community interactions, relative to environmental forcing, contribute to the overall variance of the stationary distribution. That is, when all of the community interactions are relatively weak, we would expect that the changes in the elements of $\mathbf{x}_t$ from $t$ to $t-1$ are driven almost entirely by random environmental variation ($i.e.$, the variance in $\mathbf{w}_t$).
 
 The matrices $\mathbf{\Sigma}$ and $\mathbf{Q}$ are the variances of the stationary distribution and process errors, respectively. As such, we can use the determinants of those matrices to estimate the hyperdimensional "volume" that they occupy. 
 
@@ -104,14 +104,21 @@ the ‘‘volume’’ of covariance matrices.
 
 Specifically, we want $\text{det}(\mathbf{\Sigma} - \mathbf{Q})$.
 
-Looking back to the equation for the matrix form of the variance of the stationary distribution, we see that
+Looking back to the equation for the matrix form of the variance of the stationary distribution, where
 
-\begin{align*}
-\mathbf{\Sigma} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q} \\
-\mathbf{\Sigma} - \mathbf{Q} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top.
-\end{align*}
+$$
+\mathbf{\Sigma} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}, \\
+$$
+
+we see that both the various community interactions contained in $\mathbf{B}$ and the variance in environmental forcing $\mathbf{Q}$ contribute to the variance of the stationary distribution.
 
 From this it follows that
+
+$$
+\mathbf{\Sigma} - \mathbf{Q} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top,
+$$
+
+and hence
 
 \begin{align*}
 \text{det}(\mathbf{\Sigma} - \mathbf{Q}) &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B}^\top) \\
@@ -121,7 +128,7 @@ From this it follows that
 The proportion $\pi$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions is then
 
 $$
-\frac{\text{det}(\mathbf{\Sigma} - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
+\pi  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
 $$
 
 ## Intra- versus inter-specific interactions
