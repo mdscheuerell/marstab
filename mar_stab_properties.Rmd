@@ -96,13 +96,12 @@ $$
 
 Among the many ways of classifying stability, we are interested in the extent to which community interactions, relative to environmental forcing, contribute to the overall variance of the stationary distribution. That is, when all of the community interactions are relatively weak, we would expect that the changes in the elements of $\mathbf{x}_t$ from $t$ to $t-1$ are driven almost entirely by random environmental variation ($i.e.$, the variance in $\mathbf{w}_t$).
 
-The matrices $\mathbf{\Sigma}$ and $\mathbf{Q}$ are the variances of the stationary distribution and process errors, respectively. As such, we can use the determinants of those matrices to estimate the hyperdimensional "volume" that they occupy. 
+The matrices $\mathbf{\Sigma}$ and $\mathbf{Q}$ are the variances of the stationary distribution and process errors, respectively. Specifically, the volume of the difference $\mathbf{\Sigma} - \mathbf{Q}$ measures the degree to which species interactions increase
+the variance of the stationary distribution relative to the variance of the process error.
 
-The second method for comparing the variance of
-probability distributions uses determinants to measure
-the ‘‘volume’’ of covariance matrices.
+We can use the determinants of those matrices to estimate the hyperdimensional "volume" that they occupy. 
 
-Specifically, we want $\text{det}(\mathbf{\Sigma} - \mathbf{Q})$.
+
 
 Looking back to the equation for the matrix form of the variance of the stationary distribution, where
 
