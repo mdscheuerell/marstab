@@ -151,9 +151,31 @@ $$
 
 where $\mathbf{I}$ is again an $n \times n$ identity matrix. The proportion of the volume of $\mathbf{B}$ attributable to competition, predator-prey interactions, etc is then simply $\pi_\mathbf{\Omega} = 1 - \pi_\mathbf{\Delta}$.
 
+# The effects of covariates
+
+Often we would like to examine the potential effects of covariates on community dynamics. In that case, the MARSS(1) model becomes
+
+\begin{gather*}
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_t + \mathbf{w}_t, \\
+\mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t,
+\end{gather*}
+
+where $\mathbf{C}$ is an $n \times p$ matrix of covariate effects, and $\mathbf{c}_t$ is a $p \times 1$ vector of covariates at time $t$. Although the variance of the stationary distrbution will be affected by any covariate effects, the method described above for estimating the relative effects of species interactions is unaffected. That is, if $\mathbf{\Xi}$ is the variance-covariance matrix of the covariates in $\mathbf{c}$, then analogous to above the variance of the stationary distrbution will be
+
+\begin{align*}
+\mathbf{\Sigma} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top + \mathbf{Q}, \\
+\mathbf{\Sigma - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q}} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top ,
+\end{align*}
+
+and hence the proportion $\pi_\mathbf{B}$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions is, as before, given by
+
+$$
+\pi_\mathbf{B}  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
+$$
+
 # An example
 
-As an example, I will fit a MARSS(1) model to some plankton data from Lake Washington (USA). These data were made publicly available by Dr. Daniel Schindler of the University of Washington, and they have been included with the `MARSS` package for \textbf{R}. In particular, I will focus on the time period from 1977 onward because \textit{Daphnia} species were largely absent from the water column prior to then.
+As an example, I will fit a MARSS(1) model to some plankton data from Lake Washington (USA). These data were made publicly available by Dr. Daniel Schindler of the University of Washington, and they have been included as part of the `MARSS` package for \textbf{R}. In particular, I will focus on the time period from 1977 onward because \textit{Daphnia} species were largely absent from the water column prior to then.
 
 ```{r load_data}
 library(MARSS)
@@ -169,6 +191,5 @@ phyto_names <- c("Cryptomonas", "Diatoms", "Greens", "Unicells", "Other.algae")
 zoops_names <- c("Cyclops", "Diaptomus", "Epischura",   # copepods
                  "Daphnia", "Non.daphnid.cladocerans",  # cladocerans
                  "Conochilus", "Non.colonial.rotifers") # rotifers
-
 ```
 
