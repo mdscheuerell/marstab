@@ -181,9 +181,10 @@ As an example, I will fit a MARSS(1) model to some plankton data from Lake Washi
 library(MARSS)
 ## load the data (2 datasets here)
 data(lakeWAplankton)
-## keep only 1977-
 raw <- as.data.frame(lakeWAplanktonRaw)
+## keep only 1977-
 dat <- subset(raw, Year>=1977)
+## contents
 colnames(dat)
 ## phytoplankton names (omitting bluegreens)
 phyto_names <- c("Cryptomonas", "Diatoms", "Greens", "Unicells", "Other.algae")
@@ -191,5 +192,60 @@ phyto_names <- c("Cryptomonas", "Diatoms", "Greens", "Unicells", "Other.algae")
 zoops_names <- c("Cyclops", "Diaptomus", "Epischura",   # copepods
                  "Daphnia", "Non.daphnid.cladocerans",  # cladocerans
                  "Conochilus", "Non.colonial.rotifers") # rotifers
+all_names <- c(phyto_names,zoops_names)
+## number of taxa
+nP <- length(phyto_names)
+nZ <- length(zoops_names)
+nn <- nP + nZ 
 ```
+
+In addition to the biotic interactions, I will include the effects of water temperature on the plankton.
+
+Now we need to set up the various vectors and matrices that define our MARSS(1) model. Here I will make the following assumptions:
+
+1. independent and identically distributed observation errors for all of the taxa within each of the two plankton groups;
+2. a block-diagonal form for $\mathbf{Q}$ wherein all of the taxa within a plankton group have the same variance and covariance of process errors; 
+3. missing covariates are imputed as averages of the values at $t-1$ and $t+1$; and
+4. (possibly) different effects of covariates on each taxa.
+
+The following code also makes use of various shorthand character description of vectors and matrics in `MARSS`.
+
+```{r setup_marss}
+mod_list <- list()
+## process model
+mod_list$B <- "unconstrained"
+mod_list$U <- "zero"
+## include temperature effect
+mod_list$C <- "unconstrained"
+temp <- matrix(dat$Temp, nrow=1)
+ii <- which(is.na(temp))
+temp[ii] <- mean(temp[ii-1], temp[ii+1])
+mod_list$c <- round(temp, 2)
+## var-cov of process (environmental errors)
+mod_list$Q <- matrix(list(0), nn, nn)
+mod_list$Q[1:nP,1:nP] <- "g_phyto"
+mod_list$Q[1:nZ+nP,1:nZ+nP] <- "g_zoops"
+diag(mod_list$Q) <- c(rep("q_phyto", nP), rep("q_zoops", nZ))
+## observation model
+mod_list$Z <- "identity"
+mod_list$A <- "scaling"
+mod_list$D <- "zero"
+mod_list$d <- "zero"
+## observation var-cov
+mod_list$R <- matrix(list(0), nn, nn)
+diag(mod_list$R) <- c(rep("r_phyto", nP), rep("r_zoops", nZ))
+```
+
+The model we are fitting is based upon log-densities, so we'll need to transform the data before proceeding. In this case, zeroes in the data set are indicative of sampling program and therefore I will convert them to NA.
+
+```{r fit_mod, cache=TRUE}
+yy <- dat[,all_names]
+yy[yy==0] <- NA
+## log-transform variates
+## data must also be n x T, so transpose
+yy <- t(log(yy))
+## fit model
+mod <- MARSS(yy, model=mod_list, control=list(maxit=2000, safe=TRUE))
+```
+
 
