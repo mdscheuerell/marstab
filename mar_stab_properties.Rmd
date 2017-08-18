@@ -136,20 +136,20 @@ $$
 
 The matrix $\mathbf{\Delta}$ has density-dependent effects for each community member along the diagonal and zeroes elsewhere. The matrix $\mathbf{\Omega}$ contains zeroes along the diagonal and (potentially) non-zero entries in the off-diagonals. 
 
-We can again use determinants to measure the relative contributions of intra- $(\mathbf{\Delta})$ versus inter-specific $(\mathbf{\Omega})$ interactions to the volume of $\mathbf{B}$, where
+We can again use determinants to measure the relative contributions of intra- $(\mathbf{\Delta})$ versus inter-specific $(\mathbf{\Omega})$ interactions to the volume of $\mathbf{B}$. Taking the square of the determinant on both sides, we get
 
 \begin{align*}
-\text{det}(\mathbf{B}) &= \text{det}(\mathbf{\Delta} + \mathbf{\Omega}) \\
-  &= \text{det}(\mathbf{\Delta}) \text{det}(\mathbf{I} + \mathbf{\Omega} \mathbf{\Delta}^{-1}).
+\text{det}(\mathbf{B})^2 &= \text{det}(\mathbf{\Delta} + \mathbf{\Omega})^2 \\
+  &= \text{det}(\mathbf{\Delta})^2 \text{det}(\mathbf{I} + \mathbf{\Omega} \mathbf{\Delta}^{-1})^2.
 \end{align*}
 
-Therefore, the proportion $\pi_\mathbf{\Delta}$ of the volume of $\mathbf{B}$ attributable to density-dependent interactions is then
+Therefore, the ratio $\rho$ of intra- to inter-specfic effects is then
 
 $$
-\pi_\mathbf{\Delta}  = \frac{\text{det}(\mathbf{\Delta})}{\text{det}(\mathbf{B})} = \frac{1}{\text{det}(\mathbf{I} + \mathbf{\Omega} \mathbf{\Delta}^{-1})},
+\rho  = \frac{\text{det}(\mathbf{\Delta})^2}{\text{det}(\mathbf{I} + \mathbf{\Omega} \mathbf{\Delta}^{-1})^2} = \frac{\text{det}(\mathbf{\Delta})^4}{\text{det}(\mathbf{B})^2},
 $$
 
-where $\mathbf{I}$ is again an $n \times n$ identity matrix. The proportion of the volume of $\mathbf{B}$ attributable to competition, predator-prey interactions, etc is then simply $\pi_\mathbf{\Omega} = 1 - \pi_\mathbf{\Delta}$.
+where $\mathbf{I}$ is again an $n \times n$ identity matrix. The proportion of the volume of $\mathbf{B}$ attributable to competition, predator-prey interactions, etc is then simply $1 - \rho$.
 
 # The effects of covariates
 
@@ -175,7 +175,7 @@ $$
 
 # An example
 
-As an example, I will fit a MARSS(1) model to some plankton data from Lake Washington (USA). These data were made publicly available by Dr. Daniel Schindler of the University of Washington, and they have been included as part of the `MARSS` package for \textbf{R}. To speed up model fitting, I will focus on a representative decade from 1980 through 1989.
+As an example, I will fit a MARSS(1) model to some plankton data from Lake Washington (USA). These data were made publicly available by Dr. Daniel Schindler of the University of Washington, and they have been included as part of the `MARSS` package for \textbf{R}. To speed up model fitting, I will focus on a representative decade from 1980 through 1989, and only use some of the plankton groups.
 
 ```{r load_data}
 library(MARSS)
@@ -187,25 +187,28 @@ dat <- subset(raw, Year>=1980 & Year<=1989)
 ## contents
 colnames(dat)
 ## phytoplankton names (omitting bluegreens)
-phyto_names <- c("Cryptomonas", "Diatoms", "Greens", "Unicells")
+phyto_names <- c("Cryptomonas", "Diatoms", "Greens")
 ## zooplankton names (omitting Leptodora & Neomysis)
-zoops_names <- c("Cyclops", "Diaptomus", "Epischura",   # copepods
-                 "Daphnia", "Non.daphnid.cladocerans",  # cladocerans
-                 "Conochilus", "Non.colonial.rotifers") # rotifers
+zoops_names <- c("Cyclops", "Diaptomus",   # copepods
+                 "Daphnia", "Non.daphnid.cladocerans") # cladocerans
 all_names <- c(phyto_names,zoops_names)
 ## number of taxa
 nP <- length(phyto_names)
 nZ <- length(zoops_names)
 nn <- nP + nZ 
+## length of ts
+TT <- dim(dat)[1]
 ```
 
 In addition to the biotic interactions, I will include the effects of water temperature on the plankton.
+
+## Model definition
 
 Now we need to set up the various vectors and matrices that define our MARSS(1) model. Here I will make the following assumptions:
 
 1. independent and identically distributed observation errors for all of the taxa within each of the two plankton groups;
 2. a block-diagonal form for $\mathbf{Q}$ wherein all of the taxa within a plankton group have the same variance, and no covariance within and among blocks; and
-3. (possibly) different effects of covariates on each taxa.
+3. fixed monthly effects to eliminate seasonal components.
 
 The following code also makes use of various shorthand character description of vectors and matrics in `MARSS`.
 
@@ -214,12 +217,13 @@ mod_list <- list()
 ## process model
 mod_list$B <- "unconstrained"
 mod_list$U <- "zero"
-## include temperature effect
+## include seasonal effect
 mod_list$C <- "unconstrained"
-mod_list$c <- matrix(round(dat$Temp, 2), nrow=1)
+mod_list$c <- matrix(NA,2,TT)
+mod_list$c[1,] <- cos(2*pi*seq(TT)/12)
+mod_list$c[2,] <- sin(2*pi*seq(TT)/12)
 ## var-cov of process (environmental errors)
-mod_list$Q <- matrix(list(0), nn, nn)
-diag(mod_list$Q) <- c(rep("q_phyto", nP), rep("q_zoops", nZ))
+mod_list$Q <- "diagonal and unequal"
 ## observation model
 mod_list$Z <- "identity"
 ## set levels to zero & subtract the mean from the data below
@@ -231,9 +235,9 @@ mod_list$R <- matrix(list(0), nn, nn)
 diag(mod_list$R) <- c(rep("r_phyto", nP), rep("r_zoops", nZ))
 ```
 
-The model we are fitting is based upon log-densities, so we'll need to transform the data before proceeding. In this case, zeroes in the data set are indicative of sampling program and therefore I will convert them to NA.
+The model we are fitting is based upon log-densities, so we'll need to transform the data before proceeding. In this case, zeroes in the data set are indicative of the sampling program and do not indicate true absences; therefore I will convert them to NA.
 
-```{r fit_mod, cache=TRUE}
+```{r org_data}
 yy <- dat[,all_names]
 yy[yy==0] <- NA
 ## log-transform variates
@@ -241,8 +245,59 @@ yy[yy==0] <- NA
 yy <- t(log(yy))
 ## subtract the mean from each ts
 yy <- yy - apply(yy, 1, mean, na.rm=TRUE)
-## fit model
-mod <- MARSS(yy, model=mod_list, control=list(maxit=2000, safe=TRUE))
+matplot(t(yy), type="l")
 ```
+
+Now we can fit the model. Note that the output from `MARSS` is rather voluminous, so I will supress it here.
+
+```{r fit_mod, cache=TRUE}
+## fit model
+mod <- MARSS(yy, model=mod_list, control=list(maxit=100, safe=TRUE))
+```
+
+```{r}
+rr <- residuals(mod)$state.residuals
+matplot(t(rr), type="l")
+```
+
+
+
+## Stability analysis
+
+Now we can calculate the proportion $\pi_\mathbf{B}$ of the variance of the stationary distribution $\mathbf{\Sigma}$ owing to species interactions.
+
+```{r pi_b}
+## get B matrix
+BB <- coef(mod, type="matrix")$B
+## calc pi_B
+det(BB)^2
+## Ives adjustment for other community comparisons
+det(BB)^(2/nn)
+```
+
+It looks like $\pi_\mathbf{B}$ is very small, which suggests that most of the temporal dynamics are driven by environmental forcing.
+
+From this we can also calculate the ratio $\rho$ of the importance of density-dependent interactions relative to other interactions.
+
+```{r pi_delta}
+## delta
+delta <- diag(diag(BB))
+det(delta)
+det(delta)^2
+det(delta)^(2/nn)
+
+## omega
+omega <- BB - delta
+det(omega)
+det(diag(nn) + omega %*% solve(delta))
+det(diag(nn) + omega %*% solve(delta))^2
+
+## calc rho
+det(delta)^2 / det(BB)
+
+det(BB)
+
+```
+
 
 
