@@ -175,7 +175,7 @@ $$
 
 # An example
 
-As an example, I will fit a MARSS(1) model to some plankton data from Lake Washington (USA). These data were made publicly available by Dr. Daniel Schindler of the University of Washington, and they have been included as part of the `MARSS` package for \textbf{R}. In particular, I will focus on the time period from 1977 onward because \textit{Daphnia} species were largely absent from the water column prior to then.
+As an example, I will fit a MARSS(1) model to some plankton data from Lake Washington (USA). These data were made publicly available by Dr. Daniel Schindler of the University of Washington, and they have been included as part of the `MARSS` package for \textbf{R}. To speed up model fitting, I will focus on a representative decade from 1980 through 1989.
 
 ```{r load_data}
 library(MARSS)
@@ -183,11 +183,11 @@ library(MARSS)
 data(lakeWAplankton)
 raw <- as.data.frame(lakeWAplanktonRaw)
 ## keep only 1977-
-dat <- subset(raw, Year>=1977)
+dat <- subset(raw, Year>=1980 & Year<=1989)
 ## contents
 colnames(dat)
 ## phytoplankton names (omitting bluegreens)
-phyto_names <- c("Cryptomonas", "Diatoms", "Greens", "Unicells", "Other.algae")
+phyto_names <- c("Cryptomonas", "Diatoms", "Greens", "Unicells")
 ## zooplankton names (omitting Leptodora & Neomysis)
 zoops_names <- c("Cyclops", "Diaptomus", "Epischura",   # copepods
                  "Daphnia", "Non.daphnid.cladocerans",  # cladocerans
@@ -204,9 +204,8 @@ In addition to the biotic interactions, I will include the effects of water temp
 Now we need to set up the various vectors and matrices that define our MARSS(1) model. Here I will make the following assumptions:
 
 1. independent and identically distributed observation errors for all of the taxa within each of the two plankton groups;
-2. a block-diagonal form for $\mathbf{Q}$ wherein all of the taxa within a plankton group have the same variance and covariance of process errors; 
-3. missing covariates are imputed as averages of the values at $t-1$ and $t+1$; and
-4. (possibly) different effects of covariates on each taxa.
+2. a block-diagonal form for $\mathbf{Q}$ wherein all of the taxa within a plankton group have the same variance, and no covariance within and among blocks; and
+3. (possibly) different effects of covariates on each taxa.
 
 The following code also makes use of various shorthand character description of vectors and matrics in `MARSS`.
 
@@ -217,18 +216,14 @@ mod_list$B <- "unconstrained"
 mod_list$U <- "zero"
 ## include temperature effect
 mod_list$C <- "unconstrained"
-temp <- matrix(dat$Temp, nrow=1)
-ii <- which(is.na(temp))
-temp[ii] <- mean(temp[ii-1], temp[ii+1])
-mod_list$c <- round(temp, 2)
+mod_list$c <- matrix(round(dat$Temp, 2), nrow=1)
 ## var-cov of process (environmental errors)
 mod_list$Q <- matrix(list(0), nn, nn)
-mod_list$Q[1:nP,1:nP] <- "g_phyto"
-mod_list$Q[1:nZ+nP,1:nZ+nP] <- "g_zoops"
 diag(mod_list$Q) <- c(rep("q_phyto", nP), rep("q_zoops", nZ))
 ## observation model
 mod_list$Z <- "identity"
-mod_list$A <- "scaling"
+## set levels to zero & subtract the mean from the data below
+mod_list$A <- "zero"
 mod_list$D <- "zero"
 mod_list$d <- "zero"
 ## observation var-cov
@@ -244,6 +239,8 @@ yy[yy==0] <- NA
 ## log-transform variates
 ## data must also be n x T, so transpose
 yy <- t(log(yy))
+## subtract the mean from each ts
+yy <- yy - apply(yy, 1, mean, na.rm=TRUE)
 ## fit model
 mod <- MARSS(yy, model=mod_list, control=list(maxit=2000, safe=TRUE))
 ```
