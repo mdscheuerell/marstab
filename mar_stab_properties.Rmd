@@ -126,31 +126,6 @@ $$
 \pi_\mathbf{B}  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
 $$
 
-## Intra- versus inter-specific interactions
-
-Now that we have a means for identifying the proportion $\pi_\mathbf{B}$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions, we can go further and compare the relative contribution of intra- versus inter-specific interactions. To do so, we will decompose $\mathbf{B}$ into 2 matrices representing the two kinds of interactions, such that
-
-$$
-\mathbf{B} = \mathbf{\Delta} + \mathbf{\Omega}.
-$$
-
-The matrix $\mathbf{\Delta}$ has density-dependent effects for each community member along the diagonal and zeroes elsewhere. The matrix $\mathbf{\Omega}$ contains zeroes along the diagonal and (potentially) non-zero entries in the off-diagonals. 
-
-We can again use determinants to measure the relative contributions of intra- $(\mathbf{\Delta})$ versus inter-specific $(\mathbf{\Omega})$ interactions to the volume of $\mathbf{B}$. Taking the square of the determinant on both sides, we get
-
-\begin{align*}
-\text{det}(\mathbf{B})^2 &= \text{det}(\mathbf{\Delta} + \mathbf{\Omega})^2 \\
-  &= \text{det}(\mathbf{\Delta})^2 \text{det}(\mathbf{I} + \mathbf{\Omega} \mathbf{\Delta}^{-1})^2.
-\end{align*}
-
-Therefore, the ratio $\rho$ of intra- to inter-specfic effects is then
-
-$$
-\rho  = \frac{\text{det}(\mathbf{\Delta})^2}{\text{det}(\mathbf{I} + \mathbf{\Omega} \mathbf{\Delta}^{-1})^2} = \frac{\text{det}(\mathbf{\Delta})^4}{\text{det}(\mathbf{B})^2},
-$$
-
-where $\mathbf{I}$ is again an $n \times n$ identity matrix. The proportion of the volume of $\mathbf{B}$ attributable to competition, predator-prey interactions, etc is then simply $1 - \rho$.
-
 # The effects of covariates
 
 Often we would like to examine the potential effects of covariates on community dynamics. In that case, the MARSS(1) model becomes
@@ -172,6 +147,99 @@ and hence the proportion $\pi_\mathbf{B}$ of the volume of $\mathbf{\Sigma}$ att
 $$
 \pi_\mathbf{B}  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
 $$
+
+# Effect of density-dependence
+
+In a MAR(1) model of community dynamics, the matrix $\mathbf{B}$ maps the vector of log-densities from one time step to another. In particular, the diagonal elements of $\mathbf{B}$ control the degree of density-dependence via the degree of so-called mean reversion. Because we are interested in stationary dynamics, the diagonals of $\mathbf{B}$ will all be less than 1 in absolute value. As such, here are a few generalizations:
+
+1. As $|b_{ii}| \rightarrow 0$) the strength of density dependence increases ($i.e$, the degree of mean reversion increases);
+
+2. As $b_{ii} \rightarrow 1$) the strength of density dependence decreases to the point where there is no density dependence when $b_{ii} = 1 ($i.e.$, the temporal dynamics become a non-stationary random walk); and
+
+3. Negative values of $\mathbf{B}$ ($-1 < b_{ii} < 0$) result in a time series with a 2-point oscillation.
+
+
+Furthermore, the determinant (and the trace) of a matrix are functions of the eigenvalues $\lambda_i$, such that for an $N \times N$ matrix $\mathbf{B}$:
+
+$$
+\text{det}(\mathbf{B}) = \prod_{i=1}^N \lambda_i.
+$$
+
+The eigenvalues themselves are a function of all of the elements in $\mathbf{B}$, but they are particularly sensitive to the elements along the diagonal. We can formally examine the sensitivity of $\text{det}(\mathbf{B})$ to each of the elements in $\mathbf{B}$ via the following relationship:
+
+$$
+\frac{\partial \text{det}(\mathbf{B})}{\partial \mathbf{B}_{ij}} = \text{det}(\mathbf{B}) (\mathbf{B}^{-1})_{ji}.
+$$
+
+Thus, for any matrix $\mathbf{B}$ we can ask whether its determinant is most sensitive to a diagonal versus an off-diagonal element.
+
+## A simulation study
+
+Let's examine the determinant and the location of its maximum partial derivative for whole bunch of matrices. We'll do so over a range of matrix sizes and entries. Here's the pseudo code:
+
+* Choose a matrix size
+
+* Do the following many times
+
+     + Populate the entire matrix with random values over a specified range
+
+     + Replace the diagonal with random values over a specified range
+
+     + Calculate partial derivatives and note location of max in abs value
+
+     + For the same matrix, increase the range of values in the diagonal
+
+     + Calculate partial derivatives and note location of max in abs value
+     
+     + Calculate det(**B**)^2^
+
+```{r ddet, fig.height=8, cache=TRUE}
+## maximum matrix dim
+pp <- 10
+## number of samples
+mc <- 10000
+## maximum diagonal value (x10)
+dd <- 10
+## min off-diagonal
+dn <- -0.5
+## min off-diagonal
+dx <- 0.5
+## sample over matrix size and diagonal
+sam <- dtm <- matrix(NA,mc,dd-1)
+res1 <- res2 <- matrix(NA,dd-1,pp-1)
+for(ii in 2:pp) {
+  for(jj in 1:mc) {
+    mat <- matrix(runif(ii^2,dn,dx),ii,ii)
+    for(kk in 2:dd) {
+      tmp <- mat
+      diag(tmp) <- runif(ii,kk-1,kk)/10
+      rc <- which(abs(t(solve(tmp)))==max(abs(t(solve(tmp)))))
+      sam[jj,kk-1] <- rc %in% seq(1,ii^2,ii+1)
+      dtm[jj,kk-1] <- det(tmp)^2
+    }
+  }
+  res1[,ii-1] <- apply(sam, 2, sum)/mc
+  res2[,ii-1] <- apply(dtm, 2, mean)
+}
+## plot the results
+par(mfrow=c(2,1), mai=c(0.9,0.9,0.1,0.1), omi=rep(0,4))
+matplot(res1, type="l", lty="solid", col=rainbow(pp-1, start=0.7, end=1),
+        ylim=c(0,1), las=1,
+        xaxt="n", ylab="Prop. of maxima along diagonal", xlab="Range of diagonal")
+axis(1, at=seq(pp-1), cex.axis=0.8, labels=c("0.1-0.2", "0.2-0.3", "0.3-0.4",
+                                             "0.4-0.5", "0.5-0.6", "0.6-0.7",
+                                             "0.7-0.8", "0.8-0.9", "0.9-1.0"))
+legend(x="topleft", legend = seq(2,pp), col=rainbow(pp-1, start=0.7, end=1),
+       lty="solid", bty="n", title="Matrix dim", cex=0.8, inset=c(0.03,0.01))
+matplot(res2, type="l", lty="solid", col=rainbow(pp-1, start=0.7, end=1),
+        las=1,
+        xaxt="n", ylab=expression(det(bold(B))^2), xlab="Range of diagonal")
+axis(1, at=seq(pp-1), cex.axis=0.8, labels=c("0.1-0.2", "0.2-0.3", "0.3-0.4",
+                                             "0.4-0.5", "0.5-0.6", "0.6-0.7",
+                                             "0.7-0.8", "0.8-0.9", "0.9-1.0"))
+legend(x="topleft", legend = seq(2,pp), col=rainbow(pp-1, start=0.7, end=1),
+       lty="solid", bty="n", title="Matrix dim", cex=0.8, inset=c(0.03,0.01))
+```
 
 # An example
 
@@ -252,15 +320,13 @@ Now we can fit the model. Note that the output from `MARSS` is rather voluminous
 
 ```{r fit_mod, cache=TRUE}
 ## fit model
-mod <- MARSS(yy, model=mod_list, control=list(maxit=100, safe=TRUE))
+mod <- MARSS(yy, model=mod_list, control=list(maxit=5000, safe=TRUE))
 ```
 
 ```{r}
 rr <- residuals(mod)$state.residuals
 matplot(t(rr), type="l")
 ```
-
-
 
 ## Stability analysis
 
@@ -269,6 +335,7 @@ Now we can calculate the proportion $\pi_\mathbf{B}$ of the variance of the stat
 ```{r pi_b}
 ## get B matrix
 BB <- coef(mod, type="matrix")$B
+round(BB,2)
 ## calc pi_B
 det(BB)^2
 ## Ives adjustment for other community comparisons
@@ -279,25 +346,40 @@ It looks like $\pi_\mathbf{B}$ is very small, which suggests that most of the te
 
 From this we can also calculate the ratio $\rho$ of the importance of density-dependent interactions relative to other interactions.
 
-```{r pi_delta}
-## delta
-delta <- diag(diag(BB))
-det(delta)
-det(delta)^2
-det(delta)^(2/nn)
+# Example via decomposition
 
-## omega
-omega <- BB - delta
-det(omega)
-det(diag(nn) + omega %*% solve(delta))
-det(diag(nn) + omega %*% solve(delta))^2
+Now let's fit the MARSS model to the L Washington plankton data after we have removed any seasonal effect via decomposition ($i.e.$, removed the monthly means), rather than fitting some dummy covariates for season.
 
-## calc rho
-det(delta)^2 / det(BB)
-
-det(BB)
-
+```{r decomp_data}
+yy <- dat[,all_names]
+yy[yy==0] <- NA
+## log-transform variates
+## data must also be n x T, so transpose
+yy <- t(log(yy))
+## subtract monthly means
+for(i in 1:12) {
+  idx <- seq(from=i, by=12, length.out=TT/12)
+  mm <- apply(yy[,idx], 1, mean, na.rm=TRUE)
+  yy[,idx] <- yy[,idx] - mm
+}
+## plot the decomposed data
+matplot(t(yy), type="l")
 ```
 
+Now we can fit the model. Note that I set $\mathbf{C}$ and $\mathbf{c}$ to `"zero"` because we have eliminated the seasonal effect.
+
+```{r fit_mod_2, cache=TRUE}
+mod_list$C <- "zero"
+mod_list$c <- "zero"
+## fit model
+mod <- MARSS(yy, model=mod_list, control=list(maxit=5000, safe=TRUE))
+## get B matrix
+BB <- coef(mod, type="matrix")$B
+round(BB,2)
+## calc pi_B
+det(BB)^2
+## Ives adjustment for other community comparisons
+det(BB)^(2/nn)
+```
 
 
