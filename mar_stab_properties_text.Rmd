@@ -1,0 +1,194 @@
+---
+title: "Stability properties for MAR(1) models"
+output: pdf_document
+fontsize: 10pt
+geometry: margin=1.25in
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\begin{center}
+\textbf{Mark D. Scheuerell} \\
+\text{Northwest Fisheries Science Center} \\
+\text{National Oceanic and Atmospheric Administration} \\
+\text{Seattle, WA USA} \\
+\text{mark.scheuerell@noaa.gov}
+\end{center}
+
+# Background
+
+There is growing interest in the use of first-order vector autoregressive models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models ($e.g.$, Ives $et \ al$. 2003 $Ecol \ Monographs$ 73:301–330).
+
+The general form of a MAR(1) model is
+
+$$
+\mathbf{x}_t = \mathbf{a} + \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{a}) + \mathbf{w}_t,
+$$
+
+where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{a}$ is an $n \times 1$ vector of underlying levels (means) for each of the states, $\mathbf{B}$ is an $n \times n$ interaction matrix, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
+
+Of particular interest here is that the variance-covariance matrix of the stationary distribution for $\mathbf{x}_t$ as $t \rightarrow \infty$ gives an indication of the relative stability of the system. 
+
+## State-space form
+
+This MAR(1) model can be used within a state-space framework, wherein $\mathbf{a}$ is instead included as part of a second model for the observed data $\mathbf{y}$, such that
+
+$$
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t \\
+\mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t
+$$
+
+and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors, the statistical distribution of which does not affect the variance of the stationary distribution.
+
+# Variance of the stationary distribution
+
+We will restrict this treatment to stationary models wherein all of the eigenvalues of $\mathbf{B}$ lie within the unit circle. Because $t = (t-1)$ as $t \rightarrow \infty$, under assumptions of stationarity we can write the process equation from the above state-space model as
+
+$$
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_t + \mathbf{w}_t.
+$$
+
+From this, it follows that
+
+$$
+\rm Var(\mathbf{x}_t) = \mathbf{B} Var(\mathbf{x}_t) \mathbf{B}^\top + Var(\mathbf{w}_t).
+$$
+
+If we define $\mathbf{\Sigma} = \rm Var(\mathbf{x}_t)$, then
+
+$$  
+\mathbf{\Sigma} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}.
+$$
+
+Unfortunately, there is no closed-form solution for $\mathbf{\Sigma}$ when written in this form. However, we can use the $\text{vec}$ operator to derive an explicit solution for $\mathbf{\Sigma}$. The $\text{vec}$ operator converts an $i \times j$ matrix into an $(ij) \times 1$ column vector. For example, if
+
+$$
+\mathbf{M} = 
+\begin{bmatrix}
+    1 & 3 \\
+    2 & 4
+\end{bmatrix},
+$$
+
+then
+
+$$
+\text{vec}(\mathbf{M}) = 
+\begin{bmatrix}
+    1 \\
+    2 \\
+    3 \\
+    4 
+\end{bmatrix}.
+$$
+
+Thus, if $\mathbf{I}$ is an $n \times n$ identity matrix, and we define $\mathcal{I} = \mathbf{I} \otimes \mathbf{I}$ and $\mathcal{B} = \mathbf{B} \otimes \mathbf{B}$, then
+
+$$
+\text{vec}(\mathbf{\Sigma}) = (\mathcal{I} - \mathcal{B})^{-1} \text{vec}(\mathbf{Q}).
+$$
+
+# Importance of species interactions to stability
+
+Among the many ways of classifying stability, I am interested in the extent to which community interactions, relative to environmental forcing, contribute to the overall variance of the stationary distribution. In a stable system, any perturbation affecting one or more of the community members does not amplify as it moves throughout the community as a whole, such that the variances in log-densities over time would be driven almost entirely by random environmental variation. Given that same magnitude of random environmental variation, less stable systems are characterized by greater variances in the temporal dynamics of their constituents.
+
+Here we will use determinants to measure the "volume" of a matrix. Looking back to the matrix form of the equation for the variance of the stationary distribution, we see that
+
+$$
+\mathbf{\Sigma} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}, \\
+$$
+
+and hence
+
+$$
+\mathbf{\Sigma} - \mathbf{Q} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top.
+$$
+
+Therefore, the volume of the difference $\mathbf{\Sigma} - \mathbf{Q}$ provides a measure of how much species interactions contribute to the variance of the stationary distribution. Taking determinants of both sides, we get
+
+\begin{align*}
+\text{det}(\mathbf{\Sigma} - \mathbf{Q}) &= \text{det}(\mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top) \\
+ &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B}^\top) \\
+ &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B}).  
+\end{align*}
+
+The proportion $\pi_\mathbf{B}$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions is then
+
+$$
+\pi_\mathbf{B}  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
+$$
+
+# The effects of covariates
+
+Often we would like to examine the potential effects of covariates on community dynamics. In that case, the MARSS(1) model becomes
+
+\begin{gather*}
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_t + \mathbf{w}_t, \\
+\mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t,
+\end{gather*}
+
+where $\mathbf{C}$ is an $n \times p$ matrix of covariate effects, and $\mathbf{c}_t$ is a $p \times 1$ vector of covariates at time $t$. Although the variance of the stationary distrbution will be affected by any covariate effects, the method described above for estimating the relative effects of species interactions is unaffected. That is, if $\mathbf{\Xi}$ is the variance-covariance matrix of the covariates in $\mathbf{c}$, then analogous to above the variance of the stationary distrbution will be
+
+\begin{align*}
+\mathbf{\Sigma} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top + \mathbf{Q}, \\
+\mathbf{\Sigma - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q}} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top ,
+\end{align*}
+
+and hence the proportion $\pi_\mathbf{B}$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions is, as before, given by
+
+$$
+\pi_\mathbf{B}  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
+$$
+
+# Long-term changes in abundance
+
+Ives $et \ al$. ($Ecology$ 1999 80:1405–1421) provide a means for assessing the expected long-term change in the density (biomass) of species $i$, $L_i$, within a community of $p$ total members, owing to the effect of some covariate $j$. Specifically,
+
+$$
+L_i = \frac{\text{det}(\mathbf{B}_1, ..., \mathbf{B}_{i-1}, \mathbf{C}_j, \mathbf{B}_{i+1}, ..., \mathbf{B}_p)}{\text{det}(\mathbf{B}_1, ..., \mathbf{B}_p)},
+$$
+
+where $\mathbf{B}_i$ is a $p \times 1$ column vector containing the estimated effects of species $i$ on all of the species (including itself), and $\mathbf{C}_i$ is a $p \times 1$ column vector containing the estimated effects of covariate $j$ on each of the species.
+
+# Reactivity
+
+We can also calculate the reactivity of a community following an external perturbation, which measures the displacement of the community away from its stationary distribution. There are two methods to do so.
+
+The first follows Ives $et \ al$. (2003), where reactivity is based upon estimates of the process covariance $\mathbf{Q}$ and stationary covariance $\mathbf{\Sigma}$. Specifically, they define reactivity as
+
+$$
+\displaystyle -\frac{\text{tr}(\mathbf{Q})}{\text{tr}(\mathbf{\Sigma})} \leq 1-\lambda_{max}(\mathbf{B}^\top \mathbf{B}).
+$$
+
+The second method comes from Neubert $et \ al$. (2009), wherein reactivity is
+
+$$
+\log ||\mathbf{B}||_2 = \log \sqrt{\lambda_{max}(\mathbf{B}^\top \mathbf{B})} = \log \sigma_{max} (\mathbf{B}),
+$$
+
+and $||\cdot||_2$ is the spectral norm, $\lambda_{max}(\cdot)$ is the maximum eigenvalue, and $\sigma_{max}(\cdot)$ is the largest singular value. This method only requires estimates of the species interactions in $\mathbf{B}$.
+
+# Effect of density-dependence
+
+In a MAR(1) model of community dynamics, the matrix $\mathbf{B}$ maps the vector of log-densities from one time step to another. In particular, the diagonal elements of $\mathbf{B}$ control the degree of density-dependence via the degree of so-called mean reversion. Because we are interested in stationary dynamics, the diagonals of $\mathbf{B}$ will all be less than 1 in absolute value. As such, here are a few generalizations:
+
+1. As $|b_{ii}| \rightarrow 0$ the strength of density dependence increases ($i.e$, the degree of mean reversion increases);
+
+2. As $b_{ii} \rightarrow 1$ the strength of density dependence decreases to the point where there is no density dependence when $b_{ii} = 1 ($i.e.$, the temporal dynamics become a non-stationary random walk); and
+
+Furthermore, the determinant (and the trace) of a matrix are functions of the eigenvalues $\lambda_i$, such that for an $N \times N$ matrix $\mathbf{B}$:
+
+$$
+\text{det}(\mathbf{B}) = \prod_{i=1}^N \lambda_i.
+$$
+
+The eigenvalues themselves are a function of all of the elements in $\mathbf{B}$, but they are particularly sensitive to the elements along the diagonal. We can formally examine the sensitivity of $\text{det}(\mathbf{B})$ to each of the elements in $\mathbf{B}$ via the following relationship:
+
+$$
+\frac{\partial \text{det}(\mathbf{B})}{\partial \mathbf{B}_{ij}} = \text{det}(\mathbf{B}) (\mathbf{B}^{-1})_{ji}.
+$$
+
+Thus, for any matrix $\mathbf{B}$ we can ask whether its determinant is most sensitive to a diagonal versus an off-diagonal element.
+
