@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Background
 
-There is growing interest in the use of first-order vector autoregressive, or VAR(1), models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models ($e.g.$, Ives $et$ $al$. 2003 $Ecological$ $Monographs$ 73:301–330).
+There is growing interest in the use of first-order vector autoregressive, or VAR(1), models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models ($e.g.$, Ives $et \ al$. 2003 $Ecol \ Monographs$ 73:301–330).
 
 Assume a MAR(1) model of the general form
 
@@ -150,7 +150,7 @@ $$
 
 # Long-term changes in abundance
 
-Ives et al. (1999) provide a means for assessing the expected long-term change in the density (biomass) of species $i$, $L_i$, within a community of $p$ total members, owing to the effect of some covariate $j$. Specifically,
+Ives $et \ al$. ($Ecology$ 1999 80:1405–1421) provide a means for assessing the expected long-term change in the density (biomass) of species $i$, $L_i$, within a community of $p$ total members, owing to the effect of some covariate $j$. Specifically,
 
 $$
 L_i = \frac{\text{det}(\mathbf{B}_1, ..., \mathbf{B}_{i-1}, \mathbf{C}_j, \mathbf{B}_{i+1}, ..., \mathbf{B}_p)}{\text{det}(\mathbf{B}_1, ..., \mathbf{B}_p)},
@@ -158,16 +158,27 @@ $$
 
 where $\mathbf{B}_i$ is a $p \times 1$ column vector containing the estimated effects of species $i$ on all of the species (including itself), and $\mathbf{C}_i$ is a $p \times 1$ column vector containing the estimated effects of covariate $j$ on each of the species.
 
+# Reactivity
+
+We can calculate the reactivity of a community following an external perturbation. There are two methods to do so:
+
+1. $= \displaystyle -\frac{\text{tr}(\mathbf{Q})}{\text{tr}(\mathbf{\Sigma})} \leq 1-\lambda_{max}(\mathbf{B}^\top \mathbf{B})$ (Ives $et \ al$. 2003); and
+
+2. $= \log ||\mathbf{B}||_2 = \log \sqrt{\lambda_{max}(\mathbf{B}^\top \mathbf{B})} = \log \ \sigma_{max} (\mathbf{B})$ (Neubert $et \ al$. 2009),
+
+where $||\cdot||_2$ is the spectral norm, $\lambda_{max}(\cdot)$ is the maximum eigenvalue, and $\sigma_{max}(\cdot)$ is the largest singular value.
+
+Note that method #1 requires the estimates of the process covariance $\mathbf{Q}$ and stationary covariance $\mathbf{\Sigma}$, whereas method #2 only requires estimates of $\mathbf{B}$.
+
 # Effect of density-dependence
 
 In a MAR(1) model of community dynamics, the matrix $\mathbf{B}$ maps the vector of log-densities from one time step to another. In particular, the diagonal elements of $\mathbf{B}$ control the degree of density-dependence via the degree of so-called mean reversion. Because we are interested in stationary dynamics, the diagonals of $\mathbf{B}$ will all be less than 1 in absolute value. As such, here are a few generalizations:
 
-1. As $|b_{ii}| \rightarrow 0$) the strength of density dependence increases ($i.e$, the degree of mean reversion increases);
+1. As $|b_{ii}| \rightarrow 0$ the strength of density dependence increases ($i.e$, the degree of mean reversion increases);
 
-2. As $b_{ii} \rightarrow 1$) the strength of density dependence decreases to the point where there is no density dependence when $b_{ii} = 1 ($i.e.$, the temporal dynamics become a non-stationary random walk); and
+2. As $b_{ii} \rightarrow 1$ the strength of density dependence decreases to the point where there is no density dependence when $b_{ii} = 1 ($i.e.$, the temporal dynamics become a non-stationary random walk); and
 
-3. Negative values of $\mathbf{B}$ ($-1 < b_{ii} < 0$) result in a time series with a 2-point oscillation.
-
+3. When $-1 < b_{i=j} < 0$ along the diagonal of $\mathbf{B}$ result in a time series with a 2-point oscillation (for these purposes, I will only consider cases with positive elements along the diagonal of $\mathbf{B}$).
 
 Furthermore, the determinant (and the trace) of a matrix are functions of the eigenvalues $\lambda_i$, such that for an $N \times N$ matrix $\mathbf{B}$:
 
@@ -201,7 +212,9 @@ Let's examine the determinant and the location of its maximum partial derivative
 
      + Calculate partial derivatives and note location of max in abs value
      
-     + Calculate det(**B**)^2^
+     + Calculate det(**B**)^2^  
+
+And here is the corresponding **R** code.
 
 ```{r ddet, fig.height=8, cache=TRUE}
 ## maximum matrix dim
@@ -251,17 +264,17 @@ legend(x="topleft", legend = seq(2,pp), col=rainbow(pp-1, start=0.7, end=1),
        lty="solid", bty="n", title="Matrix dim", cex=0.8, inset=c(0.03,0.01))
 ```
 
-# An example
+# Example 1
 
-As an example, I will fit a MARSS(1) model to some plankton data from Lake Washington (USA). These data were made publicly available by Dr. Daniel Schindler of the University of Washington, and they have been included as part of the `MARSS` package for \textbf{R}. To speed up model fitting, I will focus on a representative decade from 1980 through 1989, and only use some of the plankton groups.
+As an example, I will fit a MARSS(1) model to some plankton data from Lake Washington (USA). These data were made publicly available by Dr. Daniel Schindler of the University of Washington, and they have been included as part of the `MARSS` package for \textbf{R}. To speed up model fitting, I will focus on a representative time period from 1981 through 1985, and only use a subset of the plankton groups.
 
 ```{r load_data}
 library(MARSS)
 ## load the data (2 datasets here)
 data(lakeWAplankton)
 raw <- as.data.frame(lakeWAplanktonRaw)
-## keep only 1977-
-dat <- subset(raw, Year>=1980 & Year<=1989)
+## keep only 1981-85
+dat <- subset(raw, Year>=1981 & Year<=1985)
 ## contents
 colnames(dat)
 ## phytoplankton names (omitting bluegreens)
@@ -297,9 +310,9 @@ mod_list$B <- "unconstrained"
 mod_list$U <- "zero"
 ## include seasonal effect
 mod_list$C <- "unconstrained"
-mod_list$c <- matrix(NA,2,TT)
-mod_list$c[1,] <- cos(2*pi*seq(TT)/12)
-mod_list$c[2,] <- sin(2*pi*seq(TT)/12)
+cc <- subset(as.data.frame(lakeWAplanktonTrans),
+             Year>=1981 & Year<=1985, select=Temp)
+mod_list$c <- matrix(cc$Temp,1,TT)
 ## var-cov of process (environmental errors)
 mod_list$Q <- "diagonal and unequal"
 ## observation model
@@ -311,6 +324,8 @@ mod_list$d <- "zero"
 ## observation var-cov
 mod_list$R <- matrix(list(0), nn, nn)
 diag(mod_list$R) <- c(rep("r_phyto", nP), rep("r_zoops", nZ))
+## init x
+mod_list$tinitx <- 1
 ```
 
 The model we are fitting is based upon log-densities, so we'll need to transform the data before proceeding. In this case, zeroes in the data set are indicative of the sampling program and do not indicate true absences; therefore I will convert them to NA.
@@ -328,12 +343,14 @@ matplot(t(yy), type="l")
 
 Now we can fit the model. Note that the output from `MARSS` is rather voluminous, so I will supress it here.
 
-```{r fit_mod, cache=TRUE}
+```{r fit_mod_1, cache=TRUE}
 ## fit model
 mod <- MARSS(yy, model=mod_list, control=list(maxit=5000, safe=TRUE))
 ```
 
-```{r}
+And inspect the residuals.
+
+```{r resids_1}
 rr <- residuals(mod)$state.residuals
 matplot(t(rr), type="l")
 ```
@@ -342,7 +359,7 @@ matplot(t(rr), type="l")
 
 Now we can calculate the proportion $\pi_\mathbf{B}$ of the variance of the stationary distribution $\mathbf{\Sigma}$ owing to species interactions.
 
-```{r pi_b}
+```{r pi_b_1}
 ## get B matrix
 BB <- coef(mod, type="matrix")$B
 round(BB,2)
@@ -354,11 +371,103 @@ det(BB)^(2/nn)
 
 It looks like $\pi_\mathbf{B}$ is very small, which suggests that most of the temporal dynamics are driven by environmental forcing.
 
-## Long-terms change in abundance
+## Long-term change in abundance
 
-Next let's calculate yhe expected long-term changes in the densities of the L WA plankton community owing to the "environment" ($i.e.$, a cosine wave indicative of seasonal variation.
+Next let's calculate the expected long-term changes in the densities of the L WA plankton community owing to the "environment" ($i.e.$, a cosine wave indicative of seasonal variation.
 
 ```{r long_term_changes}
+CC <- coef(mod, type="matrix")$C
+LL <- rep(NA, nn)
+for(i in 1:nn) {
+  B1 <- BB
+  B1[,i] <- CC
+  LL[i] <- det(B1)/det(BB)
+}
+data.frame(taxa=all_names, L=round(LL, 2))
+```
+
+## Reactivity
+
+Lastly, we can calculate the reactivity of the community following a perturbation using both of the methods described above. Note that for the first method we'll make use of the `vec` function from the `MARSS` package.
+
+### Ives $et \ al$.
+
+```{r react_ives_1}
+tr <- function(x) {
+  return(sum(diag(x)))
+}
+## covariance of proc errors
+QQ <- coef(mod, type="matrix")$Q
+## covariance of stationary dist
+vSigma <- solve(diag(nn) %x% diag(nn) - BB %x% BB) %*% MARSS:::vec(QQ)
+Sigma <- matrix(vSigma, nn, nn)
+## reactivity
+RI <- -tr(QQ) / tr(Sigma)
+RI
+## worst case
+1 - eigen(t(BB) %*% BB)$values[1]
+```
+
+### Neubert $et \ al$.
+
+```{r react_neub_1}
+## reactivity
+RN <- log(norm(BB, "2"))
+RN
+log(sqrt(eigen(t(BB) %*% BB)$values[1]))
+log(max(svd(BB)$d))
+
+eigen(t(BB) %*% BB)$values
+```
+
+# Example 2
+
+e analysis, but instead of using temperature as a covariate, I will use a combination of sine and 
+Now I will repeat the same analysis, but instead of using temperature as a covariate, I will use a combination of sine and cosine waves to capture the seasonal variations. 
+
+```{r setup_marss_2}
+## change seasonal effect
+mod_list$C <- "unconstrained"
+mod_list$c <- matrix(NA,2,TT)
+mod_list$c[1,] <- cos(2*pi*seq(TT)/12)
+mod_list$c[2,] <- sin(2*pi*seq(TT)/12)
+```
+
+Now we can fit the model.
+
+```{r fit_mod_2, cache=TRUE}
+## fit model
+mod <- MARSS(yy, model=mod_list, control=list(maxit=5000, safe=TRUE))
+```
+
+And inspect the residuals.
+
+```{r, resids_2}
+rr <- residuals(mod)$state.residuals
+matplot(t(rr), type="l")
+```
+
+## Importance of species interactions
+
+Now we can calculate the proportion $\pi_\mathbf{B}$ of the variance of the stationary distribution $\mathbf{\Sigma}$ owing to species interactions.
+
+```{r pi_b_2}
+## get B matrix
+BB <- coef(mod, type="matrix")$B
+round(BB,2)
+## calc pi_B
+det(BB)^2
+## Ives adjustment for other community comparisons
+det(BB)^(2/nn)
+```
+
+It looks like $\pi_\mathbf{B}$ is very small, which suggests that most of the temporal dynamics are driven by environmental forcing.
+
+## Long-term change in abundance
+
+Next let's calculate the expected long-term changes in the densities of the L WA plankton community owing to the "environment" ($i.e.$, a cosine wave indicative of seasonal variation.
+
+```{r long_term_changes_2}
 CC <- coef(mod, type="matrix")$C
 LL <- matrix(NA, nn, 2)
 for(i in 1:nn) {
