@@ -1,0 +1,54 @@
+---
+title: "Random stuff re: stability properties for MAR(1) models"
+output: pdf_document
+fontsize: 10pt
+geometry: margin=1.25in
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\begin{center}
+\textbf{Mark D. Scheuerell} \\
+\text{Northwest Fisheries Science Center} \\
+\text{National Oceanic and Atmospheric Administration} \\
+\text{Seattle, WA USA} \\
+\text{mark.scheuerell@noaa.gov}
+\end{center}
+
+# Example via decomposition
+
+Now let's fit the MARSS model to the L Washington plankton data after we have removed any seasonal effect via decomposition ($i.e.$, removed the monthly means), rather than fitting some dummy covariates for season.
+
+```{r decomp_data}
+yy <- dat[,all_names]
+yy[yy==0] <- NA
+## log-transform variates
+## data must also be n x T, so transpose
+yy <- t(log(yy))
+## subtract monthly means
+for(i in 1:12) {
+  idx <- seq(from=i, by=12, length.out=TT/12)
+  mm <- apply(yy[,idx], 1, mean, na.rm=TRUE)
+  yy[,idx] <- yy[,idx] - mm
+}
+## plot the decomposed data
+matplot(t(yy), type="l")
+```
+
+Now we can fit the model. Note that I set $\mathbf{C}$ and $\mathbf{c}$ to `"zero"` because we have eliminated the seasonal effect.
+
+```{r fit_mod_2, cache=TRUE}
+mod_list$C <- "zero"
+mod_list$c <- "zero"
+## fit model
+mod <- MARSS(yy, model=mod_list, control=list(maxit=5000, safe=TRUE))
+## get B matrix
+BB <- coef(mod, type="matrix")$B
+round(BB,2)
+## calc pi_B
+det(BB)^2
+## Ives adjustment for other community comparisons
+det(BB)^(2/nn)
+```

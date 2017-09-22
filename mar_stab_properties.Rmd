@@ -148,6 +148,16 @@ $$
 \pi_\mathbf{B}  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
 $$
 
+# Long-term changes in abundance
+
+Ives et al. (1999) provide a means for assessing the expected long-term change in the density (biomass) of species $i$, $L_i$, within a community of $p$ total members, owing to the effect of some covariate $j$. Specifically,
+
+$$
+L_i = \frac{\text{det}(\mathbf{B}_1, ..., \mathbf{B}_{i-1}, \mathbf{C}_j, \mathbf{B}_{i+1}, ..., \mathbf{B}_p)}{\text{det}(\mathbf{B}_1, ..., \mathbf{B}_p)},
+$$
+
+where $\mathbf{B}_i$ is a $p \times 1$ column vector containing the estimated effects of species $i$ on all of the species (including itself), and $\mathbf{C}_i$ is a $p \times 1$ column vector containing the estimated effects of covariate $j$ on each of the species.
+
 # Effect of density-dependence
 
 In a MAR(1) model of community dynamics, the matrix $\mathbf{B}$ maps the vector of log-densities from one time step to another. In particular, the diagonal elements of $\mathbf{B}$ control the degree of density-dependence via the degree of so-called mean reversion. Because we are interested in stationary dynamics, the diagonals of $\mathbf{B}$ will all be less than 1 in absolute value. As such, here are a few generalizations:
@@ -328,7 +338,7 @@ rr <- residuals(mod)$state.residuals
 matplot(t(rr), type="l")
 ```
 
-## Stability analysis
+## Importance of species interactions
 
 Now we can calculate the proportion $\pi_\mathbf{B}$ of the variance of the stationary distribution $\mathbf{\Sigma}$ owing to species interactions.
 
@@ -344,42 +354,20 @@ det(BB)^(2/nn)
 
 It looks like $\pi_\mathbf{B}$ is very small, which suggests that most of the temporal dynamics are driven by environmental forcing.
 
-From this we can also calculate the ratio $\rho$ of the importance of density-dependent interactions relative to other interactions.
+## Long-terms change in abundance
 
-# Example via decomposition
+Next let's calculate yhe expected long-term changes in the densities of the L WA plankton community owing to the "environment" ($i.e.$, a cosine wave indicative of seasonal variation.
 
-Now let's fit the MARSS model to the L Washington plankton data after we have removed any seasonal effect via decomposition ($i.e.$, removed the monthly means), rather than fitting some dummy covariates for season.
-
-```{r decomp_data}
-yy <- dat[,all_names]
-yy[yy==0] <- NA
-## log-transform variates
-## data must also be n x T, so transpose
-yy <- t(log(yy))
-## subtract monthly means
-for(i in 1:12) {
-  idx <- seq(from=i, by=12, length.out=TT/12)
-  mm <- apply(yy[,idx], 1, mean, na.rm=TRUE)
-  yy[,idx] <- yy[,idx] - mm
+```{r long_term_changes}
+CC <- coef(mod, type="matrix")$C
+LL <- matrix(NA, nn, 2)
+for(i in 1:nn) {
+  B1 <- B2 <- BB
+  B1[,i] <- CC[1, drop=FALSE]
+  LL[i,1] <- det(B1)/det(BB)
+  B2[,i] <- CC[2, drop=FALSE]
+  LL[i,2] <- det(B2)/det(BB)
 }
-## plot the decomposed data
-matplot(t(yy), type="l")
+data.frame(taxa=all_names, Lcos=round(LL[,1], 2), Lsin=round(LL[,2], 2))
 ```
-
-Now we can fit the model. Note that I set $\mathbf{C}$ and $\mathbf{c}$ to `"zero"` because we have eliminated the seasonal effect.
-
-```{r fit_mod_2, cache=TRUE}
-mod_list$C <- "zero"
-mod_list$c <- "zero"
-## fit model
-mod <- MARSS(yy, model=mod_list, control=list(maxit=5000, safe=TRUE))
-## get B matrix
-BB <- coef(mod, type="matrix")$B
-round(BB,2)
-## calc pi_B
-det(BB)^2
-## Ives adjustment for other community comparisons
-det(BB)^(2/nn)
-```
-
 
