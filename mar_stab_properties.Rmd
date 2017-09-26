@@ -311,7 +311,7 @@ mod_list$U <- "zero"
 ## include seasonal effect
 mod_list$C <- "unconstrained"
 cc <- subset(as.data.frame(lakeWAplanktonTrans),
-             Year>=1981 & Year<=1985, select=Temp)
+             Year>=1980 & Year<=1989, select=Temp)
 mod_list$c <- matrix(cc$Temp,1,TT)
 ## var-cov of process (environmental errors)
 mod_list$Q <- "diagonal and unequal"
