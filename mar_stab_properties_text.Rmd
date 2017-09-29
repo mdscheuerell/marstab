@@ -19,28 +19,51 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Background
 
-There is growing interest in the use of first-order vector autoregressive models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models ($e.g.$, Ives $et \ al$. 2003 $Ecol \ Monographs$ 73:301–330).
+There is growing interest in the use of first-order vector autoregressive models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models ($e.g.$, Ives $et \ al$. 2003 $Ecological \ Monographs$ 73:301–330).
 
 The general form of a MAR(1) model is
 
 $$
-\mathbf{x}_t = \mathbf{a} + \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{a}) + \mathbf{w}_t,
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t,
 $$
 
-where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{a}$ is an $n \times 1$ vector of underlying levels (means) for each of the states, $\mathbf{B}$ is an $n \times n$ interaction matrix, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
-
-Of particular interest here is that the variance-covariance matrix of the stationary distribution for $\mathbf{x}_t$ as $t \rightarrow \infty$ gives an indication of the relative stability of the system. 
+where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{B}$ is an $n \times n$ transition matrix, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
 
 ## State-space form
 
-This MAR(1) model can be used within a state-space framework, wherein $\mathbf{a}$ is instead included as part of a second model for the observed data $\mathbf{y}$, such that
+This MAR(1) model can also be used as part of a state-space model, wherein the observed data $\mathbf{y}$ are an imperfect sample of the true realizations $\mathbf{x}$, such that
 
-$$
+\begin{gather*}
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t, \\
+\mathbf{y}_t = \mathbf{x}_t + \mathbf{v}_t,
+\end{gather*}
+
+and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors.
+
+As defined here, the mean of both $\mathbf{x}$ and $\mathbf{y}$ is $\mathbf{0}$ for all $t$. If instead the mean of $\mathbf{y}$ was non-zero, we could simply subtract the mean of the observations $a \ priori$. Thus, if we define $\mathbf{a}$ to be an $n \times 1$ vector wherein the $i$-th element $a_i$ is the mean of $y_i$, and $\mathbf{y}^*_t = \mathbf{y}_t - \mathbf{a}$, then 
+
+\begin{align*}
+\mathbf{y}^*_t &= \mathbf{x}_t + \mathbf{v}_t \\
+\mathbf{y}_t - \mathbf{a} &= \mathbf{x}_t + \mathbf{v}_t \\
+\mathbf{y}_t &= \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t
+\end{align*}
+
+and hence the full state-space model would be
+
+\begin{gather*}
 \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t \\
-\mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t
-$$
+\mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t.
+\end{gather*}
 
-and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors, the statistical distribution of which does not affect the variance of the stationary distribution.
+Thus, if we define $\mathbf{a}$ to be an $n \times 1$ vector wherein the $i$-th element $a_i$ is the mean of $x_i$ or $y_i$, then the following two state-space models are equivalent:
+
+\begin{gather*}
+\mathbf{x}_t = \mathbf{a} + \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{a}) + \mathbf{w}_t \\
+\mathbf{y}_t = \mathbf{x}_t + \mathbf{v}_t
+\end{gather*}
+
+Or,
+
 
 # Variance of the stationary distribution
 
@@ -111,7 +134,7 @@ Therefore, the volume of the difference $\mathbf{\Sigma} - \mathbf{Q}$ provides 
 \begin{align*}
 \text{det}(\mathbf{\Sigma} - \mathbf{Q}) &= \text{det}(\mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top) \\
  &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B}^\top) \\
- &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B}).  
+ &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B}).
 \end{align*}
 
 The proportion $\pi_\mathbf{B}$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions is then
