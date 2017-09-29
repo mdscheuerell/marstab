@@ -19,28 +19,30 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Background
 
-There is growing interest in the use of first-order vector autoregressive models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models ($e.g.$, Ives $et \ al$. 2003 $Ecological \ Monographs$ 73:301–330).
+There is growing interest in the use of first-order vector autoregressive models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models ($e.g.$, Ives $et \ al$. 2003 $Ecological \ Monographs$ 73:301–330). In particular, MAR(1) models have been used to estimate interactions among various members in a food web and evaluate overall community stability.
 
 The general form of a MAR(1) model is
 
-$$
+\begin{equation}
 \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t,
-$$
+\end{equation} \label{eq:1}
 
 where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{B}$ is an $n \times n$ transition matrix, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
 
-## State-space form
+## State-space model
 
 This MAR(1) model can also be used as part of a state-space model, wherein the observed data $\mathbf{y}$ are an imperfect sample of the true realizations $\mathbf{x}$, such that
 
-\begin{gather*}
-\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t, \\
-\mathbf{y}_t = \mathbf{x}_t + \mathbf{v}_t,
-\end{gather*}
+\begin{equation}
+\begin{gathered}
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t \\
+\mathbf{y}_t = \mathbf{x}_t + \mathbf{v}_t
+\end{gathered} \label{eq:2}
+\end{equation}
 
-and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors.
+and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors. I will refer to this state-space form of the MAR(1) model as a MARSS model, where SS stands for state-space (and we drop the lag identifier ($p$) for convenience).
 
-As defined here, the mean of both $\mathbf{x}$ and $\mathbf{y}$ is $\mathbf{0}$ for all $t$. If instead the mean of $\mathbf{y}$ was non-zero, we could simply subtract the mean of the observations $a \ priori$. Thus, if we define $\mathbf{a}$ to be an $n \times 1$ vector wherein the $i$-th element $a_i$ is the mean of $y_i$, and $\mathbf{y}^*_t = \mathbf{y}_t - \mathbf{a}$, then 
+As defined here, the mean of both $\mathbf{x}$ and $\mathbf{y}$ is $\mathbf{0}$ for all $t$. If instead the mean of $\mathbf{y}$ was non-zero, we could simply subtract the mean of the observations $a \ priori$. Thus, if we define $\mathbf{a}$ to be an $n \times 1$ vector wherein the $i$-th element $a_i$ is the mean of $y_i$, and $\mathbf{y}^*_t = \mathbf{y}_t - \mathbf{a}$, then the observation model becomes
 
 \begin{align*}
 \mathbf{y}^*_t &= \mathbf{x}_t + \mathbf{v}_t \\
@@ -48,22 +50,43 @@ As defined here, the mean of both $\mathbf{x}$ and $\mathbf{y}$ is $\mathbf{0}$ 
 \mathbf{y}_t &= \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t
 \end{align*}
 
-and hence the full state-space model would be
+and the full state-space model would be
 
 \begin{gather*}
 \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t \\
 \mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t.
 \end{gather*}
 
-Thus, if we define $\mathbf{a}$ to be an $n \times 1$ vector wherein the $i$-th element $a_i$ is the mean of $x_i$ or $y_i$, then the following two state-space models are equivalent:
+Alternatively, we could instead specify the mean in the process model, such that if $\mathbf{a}$ is an $n \times 1$ vector wherein the $i$-th element $a_i$ is the mean of $x_i$, and $\mathbf{x}^*_t = \mathbf{x}_t - \mathbf{a}$, then the state model would be
+
+
+\begin{align*}
+\mathbf{x}^*_t &= \mathbf{B} \mathbf{x}^*_{t-1} + \mathbf{w}_t \\
+\mathbf{x}_t - \mathbf{a} &= \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{a}) + \mathbf{w}_t \\
+\mathbf{x}_t &= \mathbf{a} + \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{a}) + \mathbf{w}_t
+\end{align*}
+
+and the full state-space model would be
 
 \begin{gather*}
 \mathbf{x}_t = \mathbf{a} + \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{a}) + \mathbf{w}_t \\
-\mathbf{y}_t = \mathbf{x}_t + \mathbf{v}_t
+\mathbf{y}_t = \mathbf{x}_t + \mathbf{v}_t.
 \end{gather*}
 
-Or,
+Importantly, both of these specifications of the MARSS model are equivalent, such that we would recover the same parameter values when estimated from the same data.
 
+## Effects of covariates
+
+Often we would like to examine the potential effects of external drivers (covariates) on community dynamics. Traditionally, a MARSS model with covariate effects has been defined as
+
+\begin{gather*}
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_t + \mathbf{w}_t, \\
+\mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t,
+\end{gather*}
+
+where $\mathbf{C}$ is an $n \times p$ matrix of covariate effects, and $\mathbf{c}_t$ is a $p \times 1$ vector of covariates at time $t$.
+
+However, when defined this way, the covariate effects in $\mathbf{C}$ will not actually have units $c_i x^{-1}_i$
 
 # Variance of the stationary distribution
 
