@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Standard MARSS model
 
-There is growing interest in the use of first-order vector autoregressive, or VAR(1), models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models ($e.g.$, Ives $et \ al$. 2003 $Ecol \ Monographs$ 73:301–330). 
+There is growing interest in the use of first-order vector autoregressive, or VAR(1), models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models\footnote{See Ives et al. (2003) $Ecol ~ Monogr$ 73:301–330)}. 
 
 ## Process equation
 
