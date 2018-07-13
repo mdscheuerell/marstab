@@ -53,7 +53,7 @@ $\mathbf{a}$ is an $n \times 1$ vector of offsets, and $\mathbf{v}_t$ is an $n \
 
 ## Process equation
 
-The above MARSS model can be rewritten in a more compact form if we make some assumptions about the time lag $h$ for the covariates. Beginning with the process equation, if $h = 1$ and all of the covariates have been scaled to have zero mean and unit variance, then we can redefine the MAR(1) model as
+The above MARSS model can be rewritten in a more compact form if we make some assumptions about the time lag $h$ for the covariates. Beginning with the process equation, if all of the covariates have been scaled to have zero mean and unit variance, then we can redefine the MAR(1) model as
 
 $$
 \mathbf{x}_t^* = \mathbf{B}^* \mathbf{x}_{t-1}^* + \mathbf{w}_t^* ~ \text{with} ~ \mathbf{w}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{Q}^*),
@@ -65,7 +65,7 @@ $$
 \mathbf{x}_t^* = 
 \begin{bmatrix}
     \mathbf{x}_t \\
-    \mathbf{c}_t
+    \mathbf{c}_{t-h}
 \end{bmatrix},
 $$
 
@@ -143,7 +143,7 @@ $$
 \end{bmatrix}. 
 $$
 
-The $p \times p$ matrix $\mathbf{S}$ contains the variances of each of the $p$ covariates along the diagonal and 0’s elsewhere ($i.e.$, they are specified $a ~ priori$ and not estimated). To allow for non-zero means in the covariates, an $n \times 1$ vector $\mathbf{a}$  containing covariate means must be included in $\mathbf{a}^*$ , such that
+The $p \times p$ matrix $\mathbf{S}$ contains the variances of each of the $p$ covariates along the diagonal and 0’s elsewhere ($i.e.$, they are specified $a ~ priori$ and not estimated). To allow for non-zero means in the covariates, a $p \times 1$ vector $\mathbf{a}$ containing covariate means must be included in the $(n + p) \times 1$ column vector $\mathbf{a}^*$ , such that
 
 $$
 \mathbf{a}^* = 
@@ -152,3 +152,5 @@ $$
     \mathbf{a}
 \end{bmatrix}.
 $$
+
+As with $\mathbf{S}$ above, the covariate-specific means are specified rather than estimated.
