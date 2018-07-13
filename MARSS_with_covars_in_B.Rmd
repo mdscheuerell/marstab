@@ -74,15 +74,45 @@ $$
 \begin{bmatrix}
     \mathbf{B} & \mathbf{C}\\
     \mathbf{0} & \mathbf{0}
-\end{bmatrix},
+\end{bmatrix}, ~ \text{and}
 $$
 
 $$
 \mathbf{Q}^* = 
 \begin{bmatrix}
     \mathbf{Q} & \mathbf{0}\\
-    \mathbf{0} & \mathbf{I}_m
-\end{bmatrix}.
+    \mathbf{0} & \mathbf{I}_p
+\end{bmatrix}. 
 $$
+
+Here $\mathbf{I}_p$ is a $p \times p$ identity matrix. Thus, these vectors and matrices will have new dimensions, such that $\mathbf{x}_t^*$ is $(n + p) \times 1$, $\mathbf{B}_t^*$ is $(n + p) \times (n + p)$, and $\mathbf{Q}_t^*$ is also $(n + p) \times (n + p)$.
+
+## Observation equation
+
+The observation equation is then rewritten as
+
+$$
+\mathbf{y}_t^* = \mathbf{x}_t^* + \mathbf{v}_t^* ~ \text{with} ~ \mathbf{v}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{R}^*),
+$$
+
+with the following definitions:
+
+$$
+\mathbf{y}_t^* = 
+\begin{bmatrix}
+    \mathbf{y}_t \\
+    \mathbf{c}_t
+\end{bmatrix} ~ \text{and}
+$$
+
+$$
+\mathbf{R}^* = 
+\begin{bmatrix}
+    \mathbf{R} & \mathbf{0}\\
+    \mathbf{0} & \mathbf{0}
+\end{bmatrix}. 
+$$
+
+These vectors and matrices will have dimensions where $\mathbf{y}_t^*$ is $(n + p) \times 1$, $\mathbf{B}_t^*$ is $(n + p) \times (n + p)$, and $\mathbf{Q}_t^*$ is also $(n + p) \times (n + p)$.
 
 
