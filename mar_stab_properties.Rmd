@@ -174,11 +174,9 @@ Note that method #1 requires the estimates of the process covariance $\mathbf{Q}
 
 In a MAR(1) model of community dynamics, the matrix $\mathbf{B}$ maps the vector of log-densities from one time step to another. In particular, the diagonal elements of $\mathbf{B}$ control the degree of density-dependence via the degree of so-called mean reversion. Because we are interested in stationary dynamics, the diagonals of $\mathbf{B}$ will all be less than 1 in absolute value. As such, here are a few generalizations:
 
-1. As $|b_{ii}| \rightarrow 0$ the strength of density dependence increases ($i.e$, the degree of mean reversion increases);
+1. As $|b_{ii}| \rightarrow 0$ the strength of density dependence increases ($i.e.$, the degree of mean reversion increases); and
 
-2. As $b_{ii} \rightarrow 1$ the strength of density dependence decreases to the point where there is no density dependence when $b_{ii} = 1 ($i.e.$, the temporal dynamics become a non-stationary random walk); and
-
-3. When $-1 < b_{i=j} < 0$ along the diagonal of $\mathbf{B}$ result in a time series with a 2-point oscillation (for these purposes, I will only consider cases with positive elements along the diagonal of $\mathbf{B}$).
+2. As $b_{ii} \rightarrow 1$ the strength of density dependence decreases to the point where there is no density dependence when $b_{ii} = 1$ ($i.e.$, the temporal dynamics become a non-stationary random walk).
 
 Furthermore, the determinant (and the trace) of a matrix are functions of the eigenvalues $\lambda_i$, such that for an $N \times N$ matrix $\mathbf{B}$:
 
