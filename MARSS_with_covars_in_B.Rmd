@@ -1,0 +1,50 @@
+---
+title: "Compact forms for MARSS models with covariates"
+output: pdf_document
+fontsize: 10pt
+geometry: margin=1.25in
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\begin{center}
+\textbf{Mark D. Scheuerell} \\
+\text{Northwest Fisheries Science Center} \\
+\text{National Oceanic and Atmospheric Administration} \\
+\text{Seattle, WA USA} \\
+\text{mark.scheuerell@noaa.gov}
+\end{center}
+
+# Typical MARSS model
+
+There is growing interest in the use of first-order vector autoregressive, or VAR(1), models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models ($e.g.$, Ives $et \ al$. 2003 $Ecol \ Monographs$ 73:301–330). 
+
+## Process equation
+
+The underlying process in a MAR(1) model is a discrete time version of a Gompterz equation, which is typically written as
+
+$$
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t,
+$$
+
+where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{B}$ is an $n \times n$ matrix of interaction strengths, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
+
+Often we would like to include the effects of some external drivers of the system, whether they be environmental ($e.g.$, temperature) or anthropogenic ($i.e.$, harvest). In those cases, the model is expanded to
+
+$$
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_{t-h} + \mathbf{w}_t,
+$$
+where $\mathbf{C}$ is an $n \times p$ matrix of covariate effects, and $\mathbf{c}_t$ is a $p \times 1$ vector of covariates at time $t$.
+
+## Observation equation
+
+\begin{gather*}
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t, \\
+\mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t,
+\end{gather*}
+
+and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors, the statistical distribution of which does not affect the variance of the stationary distribution.
+
+where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{a}$ is an $n \times 1$ vector of underlying levels (means) for each of the states, $\mathbf{B}$ is an $n \times n$ interaction matrix, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
