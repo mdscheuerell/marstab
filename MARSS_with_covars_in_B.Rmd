@@ -31,7 +31,7 @@ $$
 
 where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{B}$ is an $n \times n$ matrix of interaction strengths, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
 
-Often we would like to include the effects of some external drivers of the system, whether they be environmental ($e.g.$, temperature) or anthropogenic ($i.e.$, harvest). In those cases, the model is expanded to
+Often we would like to include the effects of some number $p$ of external drivers of the system, whether they be environmental ($e.g.$, temperature) or anthropogenic ($i.e.$, harvest). In those cases, the model is expanded to
 
 $$
 \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_{t-h} + \mathbf{w}_t,
@@ -48,5 +48,41 @@ This process model can be used within a state-space framework wherein we add a s
 \end{gather*}
 
 $\mathbf{a}$ is an $n \times 1$ vector of offsets, and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors; $\mathbf{v}_t \sim \text{MVN}(\mathbf{0}, \mathbf{R})$.
+
+# Compact MARSS model
+
+## Process equation
+
+The above MARSS model can be rewritten in a more compact form, if we make some assumptions about the time lag $h$ for the covariates. Beginning with the process equation, if $h = 1$ and all of the covariates have been scaled to have zero mean and unit variance, then we can redefine the MAR(1) model as
+
+$$
+\mathbf{x}_t^* = \mathbf{B}^* \mathbf{x}_{t-1}^* + \mathbf{w}_t^* ~ \text{with} ~ \mathbf{w}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{Q}^*),
+$$
+
+with the following definitions:
+
+$$
+\mathbf{x}_t^* = 
+\begin{bmatrix}
+    \mathbf{x}_t \\
+    \mathbf{c}_t
+\end{bmatrix},
+$$
+
+$$
+\mathbf{B}^* = 
+\begin{bmatrix}
+    \mathbf{B} & \mathbf{C}\\
+    \mathbf{0} & \mathbf{0}
+\end{bmatrix},
+$$
+
+$$
+\mathbf{Q}^* = 
+\begin{bmatrix}
+    \mathbf{Q} & \mathbf{0}\\
+    \mathbf{0} & \mathbf{I}_m
+\end{bmatrix}.
+$$
 
 
