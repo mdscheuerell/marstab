@@ -23,7 +23,7 @@ There is growing interest in the use of first-order vector autoregressive, or VA
 
 ## Process equation
 
-The underlying process in a MAR(1) model is a discrete time version of a Gompterz equation, which is typically written as
+The underlying process in a MAR(1) model is a discrete time version of a multivariate Gompterz equation for $n$ "species", which is typically written as
 
 $$
 \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t,
@@ -49,7 +49,7 @@ This process model can be used within a state-space framework wherein we add a s
 
 $\mathbf{a}$ is an $n \times 1$ vector of offsets, and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors; $\mathbf{v}_t \sim \text{MVN}(\mathbf{0}, \mathbf{R})$.
 
-# Compact MARSS model
+# Compact MARSS model: Option 1
 
 ## Process equation
 
@@ -95,7 +95,7 @@ $$
 \mathbf{y}_t^* = \mathbf{x}_t^* + \mathbf{v}_t^* ~ \text{with} ~ \mathbf{v}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{R}^*),
 $$
 
-with the following definitions:
+and
 
 $$
 \mathbf{y}_t^* = 
@@ -113,6 +113,42 @@ $$
 \end{bmatrix}. 
 $$
 
-These vectors and matrices will have dimensions where $\mathbf{y}_t^*$ is $(n + p) \times 1$, $\mathbf{B}_t^*$ is $(n + p) \times (n + p)$, and $\mathbf{Q}_t^*$ is also $(n + p) \times (n + p)$.
+These new vectors and matrices will have dimensions where $\mathbf{y}_t^*$ is $(n + p) \times 1$ and $\mathbf{Q}_t^*$ is $(n + p) \times (n + p)$.
 
+# Compact MARSS model: Option 2
 
+If the covariates have not been scaled, then the state-space model must instead be written as
+
+\begin{gather*}
+\mathbf{x}_t^* = \mathbf{B}^* \mathbf{x}_{t-1}^* + \mathbf{w}_t^* ~ \text{with} ~ \mathbf{w}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{Q}^*) \\
+\mathbf{y}_t^* = \mathbf{x}_t^* + \mathbf{a}^* + \mathbf{v}_t^* ~ \text{with} ~ \mathbf{v}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{R}^*),
+\end{gather*}
+
+wherein 
+
+$$
+\mathbf{Q}^* = 
+\begin{bmatrix}
+    \mathbf{Q} & \mathbf{0}\\
+    \mathbf{0} & \mathbf{S}
+\end{bmatrix}, ~ \text{and} 
+$$
+
+$$
+\mathbf{S} = 
+\begin{bmatrix}
+    \text{Var}(c_1) & 0 & 0 \\
+    0 & \ddots & 0 \\
+    0 & 0 & \text{Var}(c_p)
+\end{bmatrix}. 
+$$
+
+The $p \times p$ matrix $\mathbf{S}$ contains the variances of each of the $p$ covariates along the diagonal and 0’s elsewhere ($i.e.$, they are input and not estimated). To allow for non-zero means in the covariates, an $n \times 1$ vector $\mathbf{a}$  containing covariate means must be included in $\mathbf{a}^*$ , such that
+
+$$
+\mathbf{a}^* = 
+\begin{bmatrix}
+    \mathbf{0} \\
+    \mathbf{a}
+\end{bmatrix}.
+$$
