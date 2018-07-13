@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 \textbf{Mark D. Scheuerell} \\
 \text{Northwest Fisheries Science Center} \\
 \text{National Oceanic and Atmospheric Administration} \\
-\text{Seattle, WA USA} \\
+\text{Seattle WA USA} \\
 \text{mark.scheuerell@noaa.gov}
 \end{center}
 
@@ -53,13 +53,13 @@ $\mathbf{a}$ is an $n \times 1$ vector of offsets, and $\mathbf{v}_t$ is an $n \
 
 ## Process equation
 
-The above MARSS model can be rewritten in a more compact form, if we make some assumptions about the time lag $h$ for the covariates. Beginning with the process equation, if $h = 1$ and all of the covariates have been scaled to have zero mean and unit variance, then we can redefine the MAR(1) model as
+The above MARSS model can be rewritten in a more compact form if we make some assumptions about the time lag $h$ for the covariates. Beginning with the process equation, if $h = 1$ and all of the covariates have been scaled to have zero mean and unit variance, then we can redefine the MAR(1) model as
 
 $$
 \mathbf{x}_t^* = \mathbf{B}^* \mathbf{x}_{t-1}^* + \mathbf{w}_t^* ~ \text{with} ~ \mathbf{w}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{Q}^*),
 $$
 
-with the following definitions:
+given
 
 $$
 \mathbf{x}_t^* = 
@@ -74,7 +74,7 @@ $$
 \begin{bmatrix}
     \mathbf{B} & \mathbf{C}\\
     \mathbf{0} & \mathbf{0}
-\end{bmatrix}, ~ \text{and}
+\end{bmatrix},
 $$
 
 $$
@@ -102,7 +102,7 @@ $$
 \begin{bmatrix}
     \mathbf{y}_t \\
     \mathbf{c}_t
-\end{bmatrix} ~ \text{and}
+\end{bmatrix},
 $$
 
 $$
@@ -113,7 +113,7 @@ $$
 \end{bmatrix}. 
 $$
 
-These new vectors and matrices will have dimensions where $\mathbf{y}_t^*$ is $(n + p) \times 1$ and $\mathbf{Q}_t^*$ is $(n + p) \times (n + p)$.
+These new vectors and matrices will have dimensions where $\mathbf{y}_t^*$ is an $(n + p) \times 1$ column vector and $\mathbf{Q}_t^*$ is an $(n + p) \times (n + p)$ matrix.
 
 # Compact MARSS model: Option 2
 
@@ -131,7 +131,7 @@ $$
 \begin{bmatrix}
     \mathbf{Q} & \mathbf{0}\\
     \mathbf{0} & \mathbf{S}
-\end{bmatrix}, ~ \text{and} 
+\end{bmatrix}
 $$
 
 $$
@@ -143,7 +143,7 @@ $$
 \end{bmatrix}. 
 $$
 
-The $p \times p$ matrix $\mathbf{S}$ contains the variances of each of the $p$ covariates along the diagonal and 0’s elsewhere ($i.e.$, they are input and not estimated). To allow for non-zero means in the covariates, an $n \times 1$ vector $\mathbf{a}$  containing covariate means must be included in $\mathbf{a}^*$ , such that
+The $p \times p$ matrix $\mathbf{S}$ contains the variances of each of the $p$ covariates along the diagonal and 0’s elsewhere ($i.e.$, they are specified $a ~ priori$ and not estimated). To allow for non-zero means in the covariates, an $n \times 1$ vector $\mathbf{a}$  containing covariate means must be included in $\mathbf{a}^*$ , such that
 
 $$
 \mathbf{a}^* = 
