@@ -31,7 +31,7 @@ $$
 
 where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{B}$ is an $n \times n$ matrix of interaction strengths, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
 
-Often we would like to include the effects of some number $p$ of external drivers of the system, whether they be environmental ($e.g.$, temperature) or anthropogenic ($i.e.$, harvest). In those cases, the model is expanded to
+Often we would like to include the effects of some number $p$ of external drivers of the system, whether they be environmental ($e.g.$, temperature) or anthropogenic ($e.g.$, harvest). In those cases, the model is expanded to
 
 $$
 \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_{t-h} + \mathbf{w}_t,
@@ -42,18 +42,17 @@ where $\mathbf{C}$ is an $n \times p$ matrix of covariate effects, and $\mathbf{
 
 This process model can be used within a state-space framework wherein we add a second model for the observed data $\mathbf{y}$, such that
 
-\begin{gather*}
-\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_{t-h} + \mathbf{w}_t, \\
+$$
 \mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t,
-\end{gather*}
+$$
 
-$\mathbf{a}$ is an $n \times 1$ vector of offsets, and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors; $\mathbf{v}_t \sim \text{MVN}(\mathbf{0}, \mathbf{R})$.
+$\mathbf{a}$ is an $n \times 1$ vector of offsets, and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors; $\mathbf{v}_t \sim \text{MVN}(\mathbf{0}, \mathbf{R})$. Note that if the variates in $\mathbf{y}$ have been scaled to have zero mean, then $\mathbf{a}$ can be dropped from the equation.
 
-# Compact MARSS model: Option 1
+# Compact MARSS model
 
 ## Process equation
 
-The above MARSS model can be rewritten in a more compact form if we make some assumptions about the time lag $h$ for the covariates. Beginning with the process equation, if all of the covariates have been scaled to have zero mean and unit variance, then we can redefine the MAR(1) model as
+The above MARSS model can be rewritten in a more compact form. Beginning with the process equation, we can redefine the MAR(1) model as
 
 $$
 \mathbf{x}_t^* = \mathbf{B}^* \mathbf{x}_{t-1}^* + \mathbf{w}_t^* ~ \text{with} ~ \mathbf{w}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{Q}^*),
@@ -77,6 +76,12 @@ $$
 \end{bmatrix},
 $$
 
+Here $\mathbf{I}_p$ is a $p \times p$ identity matrix. Thus, these vectors and matrices will have new dimensions, such that $\mathbf{x}_t^*$ is $(n + p) \times 1$, $\mathbf{B}_t^*$ is $(n + p) \times (n + p)$, and $\mathbf{Q}_t^*$ is also $(n + p) \times (n + p)$.
+
+### Option 1
+
+If all of the covariates have been scaled to have zero mean and unit variance, then
+
 $$
 \mathbf{Q}^* = 
 \begin{bmatrix}
@@ -85,17 +90,40 @@ $$
 \end{bmatrix}. 
 $$
 
-Here $\mathbf{I}_p$ is a $p \times p$ identity matrix. Thus, these vectors and matrices will have new dimensions, such that $\mathbf{x}_t^*$ is $(n + p) \times 1$, $\mathbf{B}_t^*$ is $(n + p) \times (n + p)$, and $\mathbf{Q}_t^*$ is also $(n + p) \times (n + p)$.
+### Option 2
+
+If, however, the covariates have not been scaled, then $\mathbf{Q}$ must be modified, such that 
+
+$$
+\mathbf{Q}^* = 
+\begin{bmatrix}
+    \mathbf{Q} & \mathbf{0}\\
+    \mathbf{0} & \mathbf{S}
+\end{bmatrix},
+$$
+
+and the $p \times p$ matrix $\mathbf{S}$ contains the variances of each of the $p$ covariates along the diagonal and 0’s elsewhere ($i.e.$, they are specified $a ~ priori$ and not estimated). Specifically,
+
+$$
+\mathbf{S} = 
+\begin{bmatrix}
+    \text{Var}(c_1) & 0 & 0 \\
+    0 & \ddots & 0 \\
+    0 & 0 & \text{Var}(c_p)
+\end{bmatrix}.
+$$
 
 ## Observation equation
 
-The observation equation is then rewritten as
+### Option 1
+
+If all of the covariates have been scaled to have zero mean and unit variance, then the observation equation is rewritten as
 
 $$
 \mathbf{y}_t^* = \mathbf{x}_t^* + \mathbf{v}_t^* ~ \text{with} ~ \mathbf{v}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{R}^*),
 $$
 
-and
+with
 
 $$
 \mathbf{y}_t^* = 
@@ -115,35 +143,15 @@ $$
 
 These new vectors and matrices will have dimensions where $\mathbf{y}_t^*$ is an $(n + p) \times 1$ column vector and $\mathbf{Q}_t^*$ is an $(n + p) \times (n + p)$ matrix.
 
-# Compact MARSS model: Option 2
+### Option 2
 
-If the covariates have not been scaled, then the state-space model must instead be written as
+If the covariates have not been scaled, then the state-space model must instead be written with an additional vector $\mathbf{a}^*$ in the observation equation, such that
 
-\begin{gather*}
-\mathbf{x}_t^* = \mathbf{B}^* \mathbf{x}_{t-1}^* + \mathbf{w}_t^* ~ \text{with} ~ \mathbf{w}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{Q}^*) \\
+$$
 \mathbf{y}_t^* = \mathbf{x}_t^* + \mathbf{a}^* + \mathbf{v}_t^* ~ \text{with} ~ \mathbf{v}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{R}^*),
-\end{gather*}
-
-wherein 
-
-$$
-\mathbf{Q}^* = 
-\begin{bmatrix}
-    \mathbf{Q} & \mathbf{0}\\
-    \mathbf{0} & \mathbf{S}
-\end{bmatrix}
 $$
 
-$$
-\mathbf{S} = 
-\begin{bmatrix}
-    \text{Var}(c_1) & 0 & 0 \\
-    0 & \ddots & 0 \\
-    0 & 0 & \text{Var}(c_p)
-\end{bmatrix}. 
-$$
-
-The $p \times p$ matrix $\mathbf{S}$ contains the variances of each of the $p$ covariates along the diagonal and 0’s elsewhere ($i.e.$, they are specified $a ~ priori$ and not estimated). To allow for non-zero means in the covariates, a $p \times 1$ vector $\mathbf{a}$ containing covariate means must be included in the $(n + p) \times 1$ column vector $\mathbf{a}^*$ , such that
+and all of the other terms are the same as above. To allow for non-zero means in the covariates, a $p \times 1$ vector $\mathbf{a}$ containing covariate means must be included in the $(n + p) \times 1$ column vector $\mathbf{a}^*$ , such that
 
 $$
 \mathbf{a}^* = 
@@ -153,4 +161,7 @@ $$
 \end{bmatrix}.
 $$
 
-As with $\mathbf{S}$ above, the covariate-specific means are specified rather than estimated.
+As with $\mathbf{S}$ below, the covariate-specific means are specified rather than estimated.
+
+
+
