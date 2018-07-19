@@ -115,12 +115,10 @@ $$
 
 ## Observation equation
 
-### Option 1
-
-If all of the covariates have been scaled to have zero mean and unit variance, then the observation equation is rewritten as
+The observation equation is rewritten as
 
 $$
-\mathbf{y}_t^* = \mathbf{x}_t^* + \mathbf{v}_t^* ~ \text{with} ~ \mathbf{v}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{R}^*),
+\mathbf{y}_t^* = \mathbf{x}_t^* + \mathbf{a}^* + \mathbf{v}_t^* ~ \text{with} ~ \mathbf{v}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{R}^*),
 $$
 
 with
@@ -141,17 +139,19 @@ $$
 \end{bmatrix}. 
 $$
 
-These new vectors and matrices will have dimensions where $\mathbf{y}_t^*$ is an $(n + p) \times 1$ column vector and $\mathbf{Q}_t^*$ is an $(n + p) \times (n + p)$ matrix.
+These new vectors and matrices will have dimensions where $\mathbf{y}_t^*$ is an $(n + p) \times 1$ column vector and $\mathbf{R}_t^*$ is an $(n + p) \times (n + p)$ matrix.
+
+### Option 1
+
+If all of the covariates have been scaled to have zero mean and unit variance, then 
+
+$$
+\mathbf{a}^* = \mathbf{0}.
+$$
 
 ### Option 2
 
-If the covariates have not been scaled, then the state-space model must instead be written with an additional vector $\mathbf{a}^*$ in the observation equation, such that
-
-$$
-\mathbf{y}_t^* = \mathbf{x}_t^* + \mathbf{a}^* + \mathbf{v}_t^* ~ \text{with} ~ \mathbf{v}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{R}^*),
-$$
-
-and all of the other terms are the same as above. To allow for non-zero means in the covariates, a $p \times 1$ vector $\mathbf{a}$ containing covariate means must be included in the $(n + p) \times 1$ column vector $\mathbf{a}^*$ , such that
+If the covariates have not been scaled, then a $p \times 1$ vector $\mathbf{a}$ containing covariate means must be included in the $(n + p) \times 1$ column vector $\mathbf{a}^*$ , such that
 
 $$
 \mathbf{a}^* = 
@@ -161,7 +161,7 @@ $$
 \end{bmatrix}.
 $$
 
-As with $\mathbf{S}$ below, the covariate-specific means are specified rather than estimated.
+As with $\mathbf{S}$ above, the covariate-specific means are specified in $\mathbf{a}$ rather than estimated.
 
 
 
