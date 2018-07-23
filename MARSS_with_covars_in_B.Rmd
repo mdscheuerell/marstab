@@ -19,24 +19,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Standard MARSS model
 
-There is growing interest in the use of first-order vector autoregressive, or VAR(1), models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models\footnote{See Ives et al. (2003) $Ecol ~ Monogr$ 73:301–330)}. 
+There is growing interest in the use of first-order vector autoregressive, or VAR(1), models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models\footnote{For an extended treatment, see Ives et al. (2003) $Ecol ~ Monogr$ 73:301–330}. 
 
 ## Process equation
 
 The underlying process in a MAR(1) model is a discrete time version of a multivariate Gompterz equation for $n$ "species", which is typically written as
 
 $$
-\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t,
-$$
-
-where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{B}$ is an $n \times n$ matrix of interaction strengths, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
-
-Often we would like to include the effects of some number $p$ of external drivers of the system, whether they be environmental ($e.g.$, temperature) or anthropogenic ($e.g.$, harvest). In those cases, the model is expanded to
-
-$$
 \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_{t-h} + \mathbf{w}_t,
 $$
-where $\mathbf{C}$ is an $n \times p$ matrix of covariate effects, and $\mathbf{c}_t$ is a $p \times 1$ vector of covariates at time $t-h$ where $0 \leq h < T$.
+
+where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{B}$ is an $n \times n$ matrix of interaction strengths, $\mathbf{C}$ is an $n \times p$ matrix of covariate effects, and $\mathbf{c}_t$ is a $p \times 1$ vector of covariates at time $t-h$ where $0 \leq h < T$, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
 
 ## Observation equation
 
@@ -102,16 +95,16 @@ $$
 \end{bmatrix},
 $$
 
-and the $p \times p$ matrix $\mathbf{S}$ contains the variances of each of the $p$ covariates along the diagonal and 0’s elsewhere ($i.e.$, they are specified $a ~ priori$ and not estimated). Specifically,
+and the $p \times p$ matrix $\mathbf{S}$ contains the variances of each of the $p$ covariates along the diagonal ($i.e.$, they are specified $a ~ priori$) and 0’s elsewhere. Specifically,
 
-$$
+\begin{equation}
 \mathbf{S} = 
 \begin{bmatrix}
-    \text{Var}(c_1) & 0 & 0 \\
-    0 & \ddots & 0 \\
-    0 & 0 & \text{Var}(c_p)
+    \text{Var}(c_1) & & {\text{\huge0}}\\
+    & \ddots &  \\
+    {\text{\huge0}}&  & \text{Var}(c_p)
 \end{bmatrix}.
-$$
+\end{equation}
 
 ## Observation equation
 
