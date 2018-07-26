@@ -56,7 +56,7 @@ Following Holmes $et~al$.\footnote{Holmes EE $et~al$. (2012) $The~R~Journal$ 4:1
 
 # Variance of the stationary distribution
 
-We will restrict this treatment to stationary models wherein all of the eigenvalues of $\mathbf{B}$ lie within the unit circle. Because $t = (t-1)$ as $t \rightarrow \infty$, under assumptions of stationarity we can write the process equation from the above state-space model as
+We will restrict this treatment to stationary models wherein all of the eigenvalues of $\mathbf{B}$ lie within the unit circle. In that case, the probability distribution of $\mathbf{x}_t$ as $t \rightarrow \infty$ is called the stationary distribution. Thus, because $\lim_{t\to\infty} t-1 = t$, under assumptions of stationarity we can write the process equation from Eqn (\ref{eq1}) as
 
 $$
 \mathbf{x}_t = \mathbf{B} \mathbf{x}_t + \mathbf{w}_t.
@@ -65,16 +65,16 @@ $$
 From this, it follows that
 
 $$
-\rm Var(\mathbf{x}_t) = \mathbf{B} Var(\mathbf{x}_t) \mathbf{B}^\top + Var(\mathbf{w}_t).
+\rm cov(\mathbf{x}_t) = \mathbf{B} cov(\mathbf{x}_t) \mathbf{B}^\top + cov(\mathbf{w}_t).
 $$
 
-If we define $\mathbf{\Sigma} = \rm Var(\mathbf{x}_t)$, then
+If we define $\mathbf{\Sigma} = \rm cov(\mathbf{x}_t)$, then
 
 $$  
 \mathbf{\Sigma} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}.
 $$
 
-Unfortunately, there is no closed-form solution for $\mathbf{\Sigma}$ when written in this form. However, we can use the $\text{vec}$ operator to derive an explicit solution for $\mathbf{\Sigma}$. The $\text{vec}$ operator converts an $i \times j$ matrix into an $(ij) \times 1$ column vector. For example, if
+Unfortunately, there is no closed-form solution for $\mathbf{\Sigma}$ when written in this form. However, we can use the $\text{vec}$ operator to derive an explicit solution for $\mathbf{\Sigma}$, as it converts an $i \times j$ matrix into an $(ij) \times 1$ column vector. For example, if
 
 $$
 \mathbf{M} = 
