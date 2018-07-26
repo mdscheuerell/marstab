@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE, size="small")
 
 # Background
 
-There is growing interest in the use of first-order vector autoregressive models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models\footnote{see Ives $et \ al$. 2003 $Ecol~Monogr$ 73:301–330}. In particular, MAR(1) models have been used to estimate interactions among various members in a food web and evaluate overall community stability.
+There is growing interest in the use of first-order vector autoregressive models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models\footnote{Ives AR $et \ al$. (2003) $Ecol~Monogr$ 73:301–330}. In particular, MAR(1) models have been used to estimate interactions among various members in a food web and evaluate overall community stability.
 
 The general form of a MAR(1) model is
 
@@ -46,7 +46,7 @@ and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors. When combine
   \end{gathered}
 \end{equation}
 
-Following Holmes $et~al$.\footnote{2012 $The~R~Journal$ 4:11-19}, I will refer to this form of the MAR(1) model as a MARSS model, where SS stands for state-space, and we drop the parenthetic lag-1 identifier for convenience.
+Following Holmes $et~al$.\footnote{Holmes EE $et~al$. (2012) $The~R~Journal$ 4:11-19}, I will refer to this form of the MAR(1) model as a MARSS model, where SS stands for state-space, and we drop the parenthetic lag-1 identifier for convenience.
 
 
 # Variance of the stationary distribution
@@ -160,7 +160,7 @@ $$
 
 # Long-term changes in abundance
 
-Ives $et~al$.\footnote{1999 $Ecology$ 80:1405–1421} provide a means for assessing the expected long-term change in the density (biomass) of species $i$, $L_i$, within a community of $p$ total members, owing to the effect of some covariate $j$. Specifically,
+Ives $et~al$.\footnote{Ives AR $et~al$. (1999) $Ecology$ 80:1405–1421} provide a means for assessing the expected long-term change in the density (biomass) of species $i$, $L_i$, within a community of $p$ total members, owing to the effect of some covariate $j$. Specifically,
 
 $$
 L_i = \frac{\text{det}(\mathbf{B}_1 \ \dots \ \mathbf{B}_{i-1} \ \mathbf{C}_j \ \mathbf{B}_{i+1} \ \dots \ \mathbf{B}_p)}{\text{det}(\mathbf{B}_1 \ \dots \mathbf{B}_p)},
@@ -172,13 +172,13 @@ where $\mathbf{B}_i$ is a $p \times 1$ column vector containing the estimated ef
 
 We can also calculate the reactivity of a community following an external perturbation, which measures the displacement of the community away from its stationary distribution. There are two methods to do so.
 
-The first follows Ives $et~al$. (2003), where reactivity is based upon estimates of the process covariance $\mathbf{Q}$ and stationary covariance $\mathbf{\Sigma}$. Specifically, they define reactivity as
+The first follows Ives $et~al$.\footnote{Ives AR $et \ al$. (2003) $Ecol~Monogr$ 73:301–330}, where reactivity is based upon estimates of the process covariance $\mathbf{Q}$ and stationary covariance $\mathbf{\Sigma}$. Specifically, they define reactivity as
 
 $$
 \displaystyle -\frac{\text{tr}(\mathbf{Q})}{\text{tr}(\mathbf{\Sigma})} \leq 1-\lambda_{max}(\mathbf{B}^\top \mathbf{B}).
 $$
 
-The second method comes from Neubert $et~al$.\footnote{2009 $Ecology$ 90:2683–2688}, wherein reactivity is
+The second method comes from Neubert $et~al$.\footnote{Neubert MG $et~al$. (2009) $Ecology$ 90:2683–2688}, wherein reactivity is
 
 $$
 \log ||\mathbf{B}||_2 = \log \sqrt{\lambda_{max}(\mathbf{B}^\top \mathbf{B})} = \log \sigma_{max} (\mathbf{B}),
