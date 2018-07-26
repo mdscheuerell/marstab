@@ -42,6 +42,272 @@ This MAR(1) model can be used within a state-space framework, wherein $\mathbf{a
 
 and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors, the statistical distribution of which does not affect the variance of the stationary distribution.
 
+### Non-zero mean in the observation
+
+As defined here, the mean of both $\mathbf{x}$ and $\mathbf{y}$ is $\mathbf{0}$ for all $t$. If instead the mean of $\mathbf{y}$ was non-zero, we could simply subtract the mean of the observations $a \ priori$. Thus, if we define $\mathbf{a}$ to be an $n \times 1$ vector wherein the $i$-th element $a_i$ is the mean of $y_i$, and $\mathbf{y}^*_t = \mathbf{y}_t - \mathbf{a}$, then the observation model becomes
+
+\begin{align}
+  \mathbf{y}^*_t &= \mathbf{x}_t + \mathbf{v}_t \nonumber \\
+  \mathbf{y}_t - \mathbf{a} &= \mathbf{x}_t + \mathbf{v}_t \nonumber \\
+  \mathbf{y}_t &= \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t \label{eq4}
+\end{align}
+
+When Eqn \eqref{eq1} is combined with Eqn \eqref{eq4}, the full state-space model becomes
+
+\begin{equation} \label{eq5}
+  \begin{gathered}
+    \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t \\
+    \mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t.
+  \end{gathered}
+\end{equation}
+
+### Non-zero mean in the state
+
+Alternatively, we could instead specify the mean in the state model, such that if $\mathbf{a}$ is an $n \times 1$ vector wherein the $i$-th element $a_i$ is the mean of $x_i$, and $\mathbf{x}^*_t = \mathbf{x}_t - \mathbf{a}$, then the state model would be
+
+\begin{align}
+  \mathbf{x}^*_t &= \mathbf{B} \mathbf{x}^*_{t-1} + \mathbf{w}_t \nonumber \\
+  \mathbf{x}_t - \mathbf{a} &= \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{a}) + \mathbf{w}_t \nonumber \\
+  \mathbf{x}_t &= \mathbf{a} + \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{a}) + \mathbf{w}_t \label{eq6}
+\end{align}
+
+Combining Eqn \eqref{eq6} and Eqn \eqref{eq2} leads to this state-space model:
+
+\begin{equation} \label{eq7}
+  \begin{gathered}
+    \mathbf{x}_t = \mathbf{a} + \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{a}) + \mathbf{w}_t \\
+    \mathbf{y}_t = \mathbf{x}_t + \mathbf{v}_t.
+  \end{gathered}
+\end{equation}
+
+Importantly, both of the specifications of the MARSS models in Eqns \eqref{eq5} and \eqref{eq7} are equivalent, such that we would recover the same parameter values when estimated from the same data.
+
+## Effects of covariates
+
+Often we would like to examine the potential effects of external drivers (covariates) on community dynamics ($e.g.$, temperature effects on poikilotherms), 
+
+### Covariates in the state I
+
+Traditionally, a MARSS model with covariate effects on the state is defined as
+
+\begin{equation} \label{eq8}
+  \begin{gathered}
+    \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_t + \mathbf{w}_t \\
+    \mathbf{y}_t = \mathbf{x}_t + \mathbf{v}_t
+  \end{gathered}
+\end{equation}
+
+where $\mathbf{C}$ is an $n \times p$ matrix of covariate effects, and $\mathbf{c}_t$ is a $p \times 1$ vector of mean-zero covariates at time $t$.
+
+However, when the state part of MARSS model is defined this way, the estimated covariate effects in $\hat{\mathbf{C}}$ will not reflect the true relationship between $\mathbf{x}$ and $\mathbf{c}$. That is, if we regressed covariate $c_j$ against $x_i$, the absolute value of the estimated slope of the relationship would be larger than that for the $ij$-th element of $\hat{\mathbf{C}}$.
+
+We can demonstrate this phenomenon easily by obtaining realizations of the state model in Eqn \eqref{eq8}. To keep things relatively simple, we will simulate interactions between wolves and moose, and assume there is one covariate ($e.g.$, temperature) that has positive, but different effects on each species. We will use a sine wave as a dummy covariate. Here is our process model
+
+\begin{equation} \label{eq9}
+ \begin{bmatrix}
+    x_{wolves} \\
+    x_{moose} \end{bmatrix}_t = 
+ \begin{bmatrix}
+     0.6&0.2 \\
+    -0.1&0.8 \end{bmatrix} 
+ \begin{bmatrix}
+    x_{wolves} \\
+    x_{moose} \end{bmatrix}_{t-1} +
+ \begin{bmatrix}
+    0.1 \\
+    0.3 \end{bmatrix} 
+ \begin{bmatrix}
+    c \end{bmatrix}_{t-1} +
+ \begin{bmatrix}
+    w_{wolves} \\
+    w_{moose} \end{bmatrix}_t. \\
+\end{equation}
+
+We will further assume the process errors $\mathbf{w}_t$ have different variances and zero covariance, such that. 
+
+\begin{equation} \label{eq10}
+\begin{bmatrix}
+    w_{wolves} \\
+    w_{moose} \end{bmatrix}_t
+\sim \text{MVN} \begin{pmatrix}
+ \begin{bmatrix}
+    0 \\
+    0 \end{bmatrix},
+ \begin{bmatrix}
+    0.03&0 \\
+    0&0.15 \\
+    \end{bmatrix}
+  \end{pmatrix}.
+\end{equation}
+
+We being by simulating 100 time steps from the model and plotting the time series for wolves (gray) and moose (brown).
+
+\vspace{0.25in}
+
+```{r sim_mar_cov_1, fig.height=4, fig.width=6}
+library(MASS)
+set.seed(123)
+## time steps
+TT <- 200
+## interaction matrix
+BB <- matrix(c(0.6,-0.1,0.2,0.8),2,2)
+## covariate effects
+CC <- matrix(c(0.1,0.3),2,1)
+## dummy sinusoidal covariate
+cc <- matrix(sin(2*pi*seq(TT)/50),1,TT)
+## process variance
+QQ <- matrix(c(0.15,0,0,0.03),2,2)
+## process errors
+xx <- ww <- t(mvrnorm(TT, matrix(c(0,0),2,1), QQ))
+## simulate process
+for(t in 2:TT) {
+  xx[,t] <- BB %*% xx[,t-1] + CC %*% cc[,t,drop=FALSE] + ww[,t]
+}
+## plot states
+par(mai=c(0.8,0.8,0.2,0.2), omi=c(0.5,0.1,0.5,0.1))
+plot.ts(xx[1,], ylab="Wolves or Moose", col="darkgray", ylim=c(min(xx), max(xx)), lwd=2)
+lines(xx[2,], col="brown", lwd=2)
+```
+
+\vspace{0.25in}
+
+Now we can examine the relationship between $\mathbf{x}$ and $\mathbf{c}$.
+
+\vspace{0.25in}
+
+```{r res_sim_1, fig.height=4, fig.width=6}
+## slopes
+sw <- coef(lm(xx[1,] ~ cc[1,] - 1))
+sm <- coef(lm(xx[2,] ~ cc[1,] - 1))
+## plot covariate vs states
+par(mfrow=c(1,2), mai=c(0.8,0.8,0.2,0.2), omi=c(0.5,0.1,0.5,0.1))
+plot(cc, xx[1,], pch=16, ylab="Wolves", xlab="Covariate", col="darkgray")
+abline(a=0, b=sw)
+text(-1, max(xx[1,]), substitute(paste("slope = ", s), list(s = round(sw, 2))),
+     adj=c(0,1), cex=0.8)
+plot(cc, xx[2,], pch=16, ylab="Moose", xlab="Covariate", col="brown")
+abline(a=0, b=sm)
+text(-1, max(xx[2,]), substitute(paste("slope = ", s), list(s = round(sm, 2))),
+     adj=c(0,1), cex=0.8)
+```
+
+\vspace{0.25in}
+
+From these results we can clearly see that the explected relationships between the states and covariate do not hold and that they are indeed biased high.
+
+### Covariates in the state II
+
+Based on the formulation of the state model in Eqn \eqref{eq6}, we can instead replace the specific mean vector $\mathbf{a}$ with a general term for the expectation of $\mathbf{x}$ at time $t$, $\text{E}(\mathbf{x}_t)$, such that
+
+\begin{equation} \label{eq11}
+  \mathbf{x}_t = \text{E}(\mathbf{x}_t) + \mathbf{B} (\mathbf{x}_{t-1} - \text{E}(\mathbf{x}_{t-1})) + \mathbf{w}_t.
+\end{equation}
+
+At this point we are making no assumptions about the underlying factors that contribute to $\text{E}(\mathbf{x}_t)$, in that there could be some underlying mean, trend, or periodicity in the state. Thus, in a model with covariate effects on the state, we would write the state-space model as
+
+\begin{equation} \label{eq12}
+  \begin{gathered}
+    \mathbf{x}_t = \mathbf{C} \mathbf{c}_t + \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{C} \mathbf{c}_{t-1}) + \mathbf{w}_t \\
+    \mathbf{y}_t = \mathbf{x}_t + \mathbf{v}_t.
+  \end{gathered}
+\end{equation}
+
+We can now simulate from Eqn \eqref{eq12} and again examine the relationship between $\mathbf{x}$ and $\mathbf{c}$ under this new formulation.
+
+\vspace{0.25in}
+
+```{r sim_mar_cov_2, fig.height=4, fig.width=6}
+## simulate process
+for(t in 2:TT) {
+  xx[,t] <- BB %*% (xx[,t-1] - CC %*% cc[,t-1]) + CC %*% cc[,t] + ww[,t]
+}
+## plot states
+par(mai=c(0.8,0.8,0.2,0.2), omi=c(0.5,0.1,0.5,0.1))
+plot.ts(xx[1,], ylab="Wolves or Moose", col="darkgray", ylim=c(min(xx), max(xx)), lwd=2)
+lines(xx[2,], col="brown", lwd=2)
+```
+
+\vspace{0.25in}
+
+And now we can again examine the estimated relationship between $\mathbf{c}$ and $\mathbf{x}$.
+
+\vspace{0.25in}
+
+```{r res_sim2, fig.height=4, fig.width=6}
+## slopes
+sw <- coef(lm(xx[1,] ~ cc[1,] - 1))
+sm <- coef(lm(xx[2,] ~ cc[1,] - 1))
+## plot covariate vs states
+par(mfrow=c(1,2), mai=c(0.8,0.8,0.2,0.2), omi=c(0.5,0.1,0.5,0.1))
+plot(cc, xx[1,], pch=16, ylab="Wolves", xlab="Covariate", col="darkgray")
+abline(a=0, b=sw)
+text(-1, max(xx[1,]), substitute(paste("slope = ", s), list(s = round(sw, 2))),
+     adj=c(0,1), cex=0.8)
+plot(cc, xx[2,], pch=16, ylab="Moose", xlab="Covariate", col="brown")
+abline(a=0, b=sm)
+text(-1, max(xx[2,]), substitute(paste("slope = ", s), list(s = round(sm, 2))),
+     adj=c(0,1), cex=0.8)
+```
+
+\vspace{0.25in}
+
+Here we can see that the estimated relationships betweem the covariate and the states are much closer to their true values.
+
+### Covariates in the observation
+
+We saw previously how to include a non-zero mean in the observation model, which was equivalent to doing so in the state model. The same reasoning applies here with respect to covariates in the observation. Using the relationship above in Eqn \eqref{eq4}, we can write the state-space model as
+
+\begin{equation} \label{eq13}
+  \begin{gathered}
+    \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t \\
+    \mathbf{y}_t = \mathbf{x}_t + \mathbf{C} \mathbf{c}_t + \mathbf{v}_t.
+  \end{gathered}
+\end{equation}
+
+As before, we can simulate some data from this model and examine the relationships between $\mathbf{c}$ and the observed data $\mathbf{y}$. To keep the comparison the same as before, we will assume that there is no obsveration error ($i.e.$, $\mathbf{v}_t = 0 \ \forall \ t$).
+
+\vspace{0.25in}
+
+```{r sim_mar_cov_obs, fig.height=4, fig.width=6}
+## initialize y
+yy <- xx
+## simulate data
+for(t in 2:TT) {
+  xx[,t] <- BB %*% xx[,t-1] + ww[,t]
+  yy[,t] <- xx[,t] + CC %*% cc[,t]
+}
+## plot states
+par(mai=c(0.8,0.8,0.2,0.2), omi=c(0.5,0.1,0.5,0.1))
+plot.ts(yy[1,], ylab="Wolves or Moose", col="darkgray", ylim=c(min(yy), max(yy)), lwd=2)
+lines(yy[2,], col="brown", lwd=2)
+```
+
+\vspace{0.25in}
+
+And lastly we can examine the estimated relationship between $\mathbf{c}$ and $\mathbf{y}$.
+
+\vspace{0.25in}
+
+```{r res_sim_obs, fig.height=4, fig.width=6}
+## slopes
+sw <- coef(lm(yy[1,] ~ cc[1,] - 1))
+sm <- coef(lm(yy[2,] ~ cc[1,] - 1))
+## plot covariate vs states
+par(mfrow=c(1,2), mai=c(0.8,0.8,0.2,0.2), omi=c(0.5,0.1,0.5,0.1))
+plot(cc, yy[1,], pch=16, ylab="Wolves", xlab="Covariate", col="darkgray")
+abline(a=0, b=sw)
+text(-1, max(yy[1,]), substitute(paste("slope = ", s), list(s = round(sw, 2))),
+     adj=c(0,1), cex=0.8)
+plot(cc, yy[2,], pch=16, ylab="Moose", xlab="Covariate", col="brown")
+abline(a=0, b=sm)
+text(-1, max(yy[2,]), substitute(paste("slope = ", s), list(s = round(sm, 2))),
+     adj=c(0,1), cex=0.8)
+```
+
+\vspace{0.25in}
+
+Again, the estimated relationships are the same as before.
+
 # Variance of the stationary distribution
 
 We will restrict this treatment to stationary models wherein all of the eigenvalues of $\mathbf{B}$ lie within the unit circle. Because $t = (t-1)$ as $t \rightarrow \infty$, under assumptions of stationarity we can write the process equation from the above state-space model as
