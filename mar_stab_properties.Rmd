@@ -450,14 +450,6 @@ $$
 \text{det}(\mathbf{B}) = \prod_{i=1}^N \lambda_i.
 $$
 
-The eigenvalues themselves are a function of all of the elements in $\mathbf{B}$, but they are particularly sensitive to the elements along the diagonal. We can formally examine the sensitivity of $\text{det}(\mathbf{B})$ to each of the elements in $\mathbf{B}$ via the following relationship:
-
-$$
-\frac{\partial \text{det}(\mathbf{B})}{\partial \mathbf{B}_{ij}} = \text{det}(\mathbf{B}) (\mathbf{B}^{-1})_{ji}.
-$$
-
-Thus, for any matrix $\mathbf{B}$ we can ask whether its determinant is most sensitive to a diagonal versus an off-diagonal element.
-
 ## A simulation study
 
 Let's examine the determinant and the location of its maximum partial derivative for whole bunch of matrices. We'll do so over a range of matrix sizes and entries. Here's the pseudo code:
