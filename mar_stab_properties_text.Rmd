@@ -129,7 +129,7 @@ By rearranging terms the proportion of the volume of $\mathbf{\Sigma}$ attributa
 
 ## The effects of covariates
 
-Although the variance of the stationary distrbution will be affected by any covariate effects, the method described above for estimating the relative effects of species interactions is unaffected. That is, if $\mathbf{\Xi}$ is the variance-covariance matrix of the covariates in $\mathbf{c}$, then analogous to (\ref{eq9}) the variance of the stationary distrbution will be
+Although the variance of the stationary distrbution will be affected by any covariate effects, the method described above for estimating the relative effects of species interactions is unaffected. That is, if $\mathbf{\Xi}$ is the variance-covariance matrix of the covariates in $\mathbf{c}$, then analogous to (\ref{eq9}) the variance of the stationary distribution will be
 
 \begin{equation}
 \mathbf{\Sigma} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top + \mathbf{Q}, \\
@@ -139,20 +139,20 @@ and hence
 
 \begin{align*}
 \mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top \\
-\text{det}(\mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q}) &= \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B})^2. \\
+\text{det}(\mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q}) &= \text{det}(\mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top) \\
 \frac{\text{det}(\mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} &= \text{det}(\mathbf{B})^2.
 \end{align*}
 
 ## Sensitivity of $\pi_\mathbf{B}$
 
-We can formally examine the sensitivity of $\text{det}(\mathbf{B})^2$ to each of the elements in $\mathbf{B}$ via the following relationship:
+We can formally examine the sensitivity of $\pi_\mathbf{B}$ to each of the elements in $\mathbf{B}$ via the following relationship:
 
 \begin{align*}
-\left[ \frac{\partial \pi_\mathbf{B}}{\partial \mathbf{B}} \right]_{ij} &= \left[ \frac{\partial \text{det}(\mathbf{B})^2}{\partial \mathbf{B}_{ij}} \right]_{ij} \\
+\left[ \frac{\partial \pi_\mathbf{B}}{\partial \mathbf{B}} \right]_{ij} &= \left[ \frac{\partial \text{det}(\mathbf{B})^2}{\partial \mathbf{B}} \right]_{ij} \\
  &= \left[ 2 ~ \text{det}(\mathbf{B})^2 (\mathbf{B}^{-1})^\top \right]_{ij}.
 \end{align*}
 
-Thus, for any matrix $\mathbf{B}$ we can ask whether its determinant is most sensitive to a diagonal versus an off-diagonal element.
+Thus, we can ask whether the proportion $\pi_\mathbf{B}$ is most sensitive to intra- or inter-species interactions, and which ones.
 
 # Long-term changes in abundance
 
