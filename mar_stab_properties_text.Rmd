@@ -156,13 +156,13 @@ Thus, we can ask whether the proportion $\pi_\mathbf{B}$ is most sensitive to in
 
 # Long-term changes in abundance
 
-Ives $et~al$.\footnote{Ives AR $et~al$. (1999) $Ecology$ 80:1405–1421} provide a means for assessing the expected long-term change in the density (biomass) of species $i$, $L_i$, within a community of $p$ total members, owing to the effect of some covariate $j$. Specifically,
+Ives $et~al$.\footnote{Ives AR $et~al$. (1999) $Ecology$ 80:1405–1421} provide a means for assessing the expected long-term change in the density (biomass) of species $i$, $L_i$, within a community of $n$ total members, owing to the effect of some covariate $j$. Specifically,
 
 \begin{equation}
-L_i = \frac{\text{det}(\mathbf{B}_1 \ \dots \ \mathbf{B}_{i-1} \ \mathbf{C}_j \ \mathbf{B}_{i+1} \ \dots \ \mathbf{B}_p)}{\text{det}(\mathbf{B}_1 \ \dots \mathbf{B}_p)},
+L_i = \frac{\text{det}(\mathbf{B}_1 \dots \mathbf{B}_{i-1} \mathbf{C}_j \mathbf{B}_{i+1} \dots \mathbf{B}_n)}{\text{det}(\mathbf{B}_1 \dots \mathbf{B}_n)},
 \end{equation}
 
-where $\mathbf{B}_i$ is a $p \times 1$ column vector containing the estimated effects of species $i$ on all of the species (including itself), and $\mathbf{C}_i$ is a $p \times 1$ column vector containing the estimated effects of covariate $j$ on each of the species.
+where $\mathbf{B}_i$ is a $n \times 1$ column vector containing the estimated effects of species $i$ on all of the species (including itself), and $\mathbf{C}_i$ is a $n \times 1$ column vector containing the estimated effects of covariate $j$ on each of the species.
 
 # Reactivity
 
