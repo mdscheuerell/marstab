@@ -108,10 +108,10 @@ Among the many ways of classifying stability, I am interested in the extent to w
 
 Here we will use determinants to measure the "volume" of a matrix. Looking back to (\ref{eq7}), we see that
 
-\begin{align*}
-\mathbf{\Sigma} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}, \\
-\mathbf{\Sigma} - \mathbf{Q} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top.
-\end{align*}
+\begin{align}
+\mathbf{\Sigma} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}, \nonumber \\
+\mathbf{\Sigma} - \mathbf{Q} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top. \label{eq9}
+\end{align}
 
 Therefore, the volume of the difference $\mathbf{\Sigma} - \mathbf{Q}$ provides a measure of how much species interactions contribute to the variance of the stationary distribution. Taking determinants of both sides, we get
 
@@ -127,6 +127,24 @@ By rearranging terms the proportion of the volume of $\mathbf{\Sigma}$ attributa
 \pi_\mathbf{B}  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
 \end{equation}
 
+## The effects of covariates
+
+Although the variance of the stationary distrbution will be affected by any covariate effects, the method described above for estimating the relative effects of species interactions is unaffected. That is, if $\mathbf{\Xi}$ is the variance-covariance matrix of the covariates in $\mathbf{c}$, then analogous to (\ref{eq9}) the variance of the stationary distrbution will be
+
+\begin{equation}
+\mathbf{\Sigma} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top + \mathbf{Q}, \\
+\end{equation}
+
+and hence
+
+\begin{align*}
+\mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top \\
+\text{det}(\mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q}) &= \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B})^2. \\
+\frac{\text{det}(\mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} &= \text{det}(\mathbf{B})^2.
+\end{align*}
+
+## Sensitivity of $\pi_\mathbf{B}$
+
 We can formally examine the sensitivity of $\text{det}(\mathbf{B})^2$ to each of the elements in $\mathbf{B}$ via the following relationship:
 
 \begin{align*}
@@ -135,21 +153,6 @@ We can formally examine the sensitivity of $\text{det}(\mathbf{B})^2$ to each of
 \end{align*}
 
 Thus, for any matrix $\mathbf{B}$ we can ask whether its determinant is most sensitive to a diagonal versus an off-diagonal element.
-
-# The effects of covariates
-
-Although the variance of the stationary distrbution will be affected by any covariate effects, the method described above for estimating the relative effects of species interactions is unaffected. That is, if $\mathbf{\Xi}$ is the variance-covariance matrix of the covariates in $\mathbf{c}$, then analogous to above the variance of the stationary distrbution will be
-
-\begin{align*}
-\mathbf{\Sigma} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top + \mathbf{Q}, \\
-\mathbf{\Sigma - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q}} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top ,
-\end{align*}
-
-and hence the proportion $\pi_\mathbf{B}$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions is, as before, given by
-
-\begin{equation}
-\pi_\mathbf{B}  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
-\end{equation}
 
 # Long-term changes in abundance
 
