@@ -31,7 +31,7 @@ where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\
 
 Often we would like to examine the potential effects of covariates on community dynamics. In that case, the MAR(1) model becomes
 
-\begin{equation} \label{eq1a}
+\begin{equation} \label{eq2}
 \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_t + \mathbf{w}_t, \\
 \end{equation}
 
@@ -39,54 +39,54 @@ where $\mathbf{C}$ is an $n \times p$ matrix of covariate effects, and $\mathbf{
 
 This MAR(1) model can also be used as part of a state-space model, wherein the observed data $\mathbf{y}$ are an imperfect sample of the true realizations $\mathbf{x}$, such that
 
-\begin{equation} \label{eq2}
+\begin{equation} \label{eq3}
   \mathbf{y}_t = \mathbf{x}_t + \mathbf{a} \mathbf{v}_t,
 \end{equation}
 
-$\mathbf{a}$ is an $n \times 1$ vector of offsets (levels) to account for non-zero means in $\mathbf{y}$, and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors. When combined, Eqns \eqref{eq1} and \eqref{eq2} form a state-space model:
+$\mathbf{a}$ is an $n \times 1$ vector of offsets (levels) to account for non-zero means in $\mathbf{y}$, and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors. When combined, Eqns \eqref{eq1} and \eqref{eq3} form a state-space model:
 
-\begin{equation} \label{eq3}
+\begin{equation} \label{eq4}
   \begin{gathered}
     \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_t + \mathbf{w}_t \\
     \mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t
   \end{gathered}
 \end{equation}
 
-Following Holmes $et~al$.\footnote{Holmes EE $et~al$. (2012) $The~R~Journal$ 4:11-19}, I will refer to this form of the MAR(1) model as a MARSS model, where SS stands for state-space, and we drop the parenthetic lag-1 identifier for convenience.
+Following Holmes $et~al$.\footnote{Holmes EE $et~al$. (2012) $The~R~Journal$ 4:11-19}, I will refer to (\ref{eq4}) as a MARSS model, where SS stands for state-space, and we drop the parenthetic lag-1 identifier for convenience.
 
 # Variance of the stationary distribution
 
-We will restrict this treatment to stationary models wherein all of the eigenvalues of $\mathbf{B}$ lie within the unit circle. In that case, the probability distribution of $\mathbf{x}_t$ as $t \rightarrow \infty$ is called the stationary distribution. Thus, because $\lim_{t\to\infty} t-1 = t$, under assumptions of stationarity we can write the process equation from Eqn (\ref{eq1}) as
+We will restrict this treatment to stationary models wherein all of the eigenvalues of $\mathbf{B}$ lie within the unit circle. In that case, the probability distribution of $\mathbf{x}_t$ as $t \rightarrow \infty$ is called the stationary distribution. Thus, because $\lim_{t\to\infty} t-1 = t$, under assumptions of stationarity we can write (\ref{eq1}) as
 
-$$
+\begin{equation} \label{eq5}
 \mathbf{x}_t = \mathbf{B} \mathbf{x}_t + \mathbf{w}_t.
-$$
+\end{equation}
 
 From this, it follows that
 
-$$
+\begin{equation} \label{eq6}
 \rm cov(\mathbf{x}_t) = \mathbf{B} cov(\mathbf{x}_t) \mathbf{B}^\top + cov(\mathbf{w}_t).
-$$
+\end{equation}
 
 If we define $\mathbf{\Sigma} = \rm cov(\mathbf{x}_t)$, then
 
-$$  
+\begin{equation} \label{eq7}
 \mathbf{\Sigma} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}.
-$$
+\end{equation}
 
 Unfortunately, there is no closed-form solution for $\mathbf{\Sigma}$ when written in this form. However, we can use the $\text{vec}$ operator to derive an explicit solution for $\mathbf{\Sigma}$, as it converts an $i \times j$ matrix into an $(ij) \times 1$ column vector. For example, if
 
-$$
+\begin{equation*}
 \mathbf{M} = 
 \begin{bmatrix}
     1 & 3 \\
     2 & 4
 \end{bmatrix},
-$$
+\end{equation*}
 
 then
 
-$$
+\begin{equation*}
 \text{vec}(\mathbf{M}) = 
 \begin{bmatrix}
     1 \\
@@ -94,29 +94,24 @@ $$
     3 \\
     4 
 \end{bmatrix}.
-$$
+\end{equation*}
 
 Thus, if $\mathbf{I}$ is an $n \times n$ identity matrix, and we define $\mathcal{I} = \mathbf{I} \otimes \mathbf{I}$ and $\mathcal{B} = \mathbf{B} \otimes \mathbf{B}$, then
 
-$$
+\begin{equation} \label{eq8}
 \text{vec}(\mathbf{\Sigma}) = (\mathcal{I} - \mathcal{B})^{-1} \text{vec}(\mathbf{Q}).
-$$
+\end{equation}
 
 # Importance of species interactions to stability
 
 Among the many ways of classifying stability, I am interested in the extent to which community interactions, relative to environmental forcing, contribute to the overall variance of the stationary distribution. In a stable system, any perturbation affecting one or more of the community members does not amplify as it moves throughout the community as a whole, such that the variances in log-densities over time would be driven almost entirely by random environmental variation. Given that same magnitude of random environmental variation, less stable systems are characterized by greater variances in the temporal dynamics of their constituents.
 
-Here we will use determinants to measure the "volume" of a matrix. Looking back to the matrix form of the equation for the variance of the stationary distribution, we see that
+Here we will use determinants to measure the "volume" of a matrix. Looking back to (\ref{eq7}), we see that
 
-$$
-\mathbf{\Sigma} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}, \\
-$$
-
-and hence
-
-$$
-\mathbf{\Sigma} - \mathbf{Q} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top.
-$$
+\begin{align*}
+\mathbf{\Sigma} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}, \\
+\mathbf{\Sigma} - \mathbf{Q} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top.
+\end{align*}
 
 Therefore, the volume of the difference $\mathbf{\Sigma} - \mathbf{Q}$ provides a measure of how much species interactions contribute to the variance of the stationary distribution. Taking determinants of both sides, we get
 
@@ -126,11 +121,11 @@ Therefore, the volume of the difference $\mathbf{\Sigma} - \mathbf{Q}$ provides 
  &= \text{det}(\mathbf{B}) \text{det}(\mathbf{\Sigma}) \text{det}(\mathbf{B}).
 \end{align*}
 
-The proportion $\pi_\mathbf{B}$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions is then
+By rearranging terms the proportion of the volume of $\mathbf{\Sigma}$ attributable to species interactions, $\pi_\mathbf{B}$, is then
 
-$$
+\begin{equation} \label{eq11}
 \pi_\mathbf{B}  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
-$$
+\end{equation}
 
 We can formally examine the sensitivity of $\text{det}(\mathbf{B})^2$ to each of the elements in $\mathbf{B}$ via the following relationship:
 
@@ -152,17 +147,17 @@ Although the variance of the stationary distrbution will be affected by any cova
 
 and hence the proportion $\pi_\mathbf{B}$ of the volume of $\mathbf{\Sigma}$ attributable to species interactions is, as before, given by
 
-$$
+\begin{equation}
 \pi_\mathbf{B}  = \frac{\text{det}(\mathbf{\Sigma} - \mathbf{C} \mathbf{\Xi} \mathbf{C}^\top - \mathbf{Q})}{\text{det}(\mathbf{\Sigma})} = \text{det}(\mathbf{B})^2.
-$$
+\end{equation}
 
 # Long-term changes in abundance
 
 Ives $et~al$.\footnote{Ives AR $et~al$. (1999) $Ecology$ 80:1405–1421} provide a means for assessing the expected long-term change in the density (biomass) of species $i$, $L_i$, within a community of $p$ total members, owing to the effect of some covariate $j$. Specifically,
 
-$$
+\begin{equation}
 L_i = \frac{\text{det}(\mathbf{B}_1 \ \dots \ \mathbf{B}_{i-1} \ \mathbf{C}_j \ \mathbf{B}_{i+1} \ \dots \ \mathbf{B}_p)}{\text{det}(\mathbf{B}_1 \ \dots \mathbf{B}_p)},
-$$
+\end{equation}
 
 where $\mathbf{B}_i$ is a $p \times 1$ column vector containing the estimated effects of species $i$ on all of the species (including itself), and $\mathbf{C}_i$ is a $p \times 1$ column vector containing the estimated effects of covariate $j$ on each of the species.
 
@@ -172,15 +167,15 @@ We can also calculate the reactivity of a community following an external pertur
 
 The first follows Ives $et~al$.\footnote{Ives AR $et \ al$. (2003) $Ecol~Monogr$ 73:301–330}, where reactivity is based upon estimates of the process covariance $\mathbf{Q}$ and stationary covariance $\mathbf{\Sigma}$. Specifically, they define reactivity as
 
-$$
+\begin{equation}
 \displaystyle -\frac{\text{tr}(\mathbf{Q})}{\text{tr}(\mathbf{\Sigma})} \leq 1-\lambda_{max}(\mathbf{B}^\top \mathbf{B}).
-$$
+\end{equation}
 
 The second method comes from Neubert $et~al$.\footnote{Neubert MG $et~al$. (2009) $Ecology$ 90:2683–2688}, wherein reactivity is
 
-$$
+\begin{equation}
 \log ||\mathbf{B}||_2 = \log \sqrt{\lambda_{max}(\mathbf{B}^\top \mathbf{B})} = \log \sigma_{max} (\mathbf{B}),
-$$
+\end{equation}
 
 and $||\cdot||_2$ is the spectral norm, $\lambda_{max}(\cdot)$ is the maximum eigenvalue, and $\sigma_{max}(\cdot)$ is the largest singular value. This method only requires estimates of the species interactions in $\mathbf{B}$.
 
