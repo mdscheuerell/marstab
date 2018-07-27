@@ -168,17 +168,20 @@ where $\mathbf{B}_i$ is a $n \times 1$ column vector containing the estimated ef
 
 We can also calculate the reactivity of a community following an external perturbation, which measures the displacement of the community away from its stationary distribution. There are two methods to do so.
 
-The first follows Ives $et~al$.\footnote{Ives AR $et \ al$. (2003) $Ecol~Monogr$ 73:301–330}, where reactivity is based upon estimates of the process covariance $\mathbf{Q}$ and stationary covariance $\mathbf{\Sigma}$. Specifically, they define reactivity as
+The first follows Ives $et~al$.\footnote{Ives AR $et \ al$. (2003) $Ecol~Monogr$ 73:301–330}, where reactivity is based upon estimates of the process covariance $\mathbf{Q}$ and stationary covariance $\mathbf{\Sigma}$. Specifically, they define reactivity $\nu$ as
 
-\begin{equation}
-\displaystyle -\frac{\text{tr}(\mathbf{Q})}{\text{tr}(\mathbf{\Sigma})} \leq 1-\lambda_{max}(\mathbf{B}^\top \mathbf{B}).
-\end{equation}
+\begin{align}
+\nu &= \displaystyle -\frac{\text{tr}(\mathbf{Q})}{\text{tr}(\mathbf{\Sigma})} \\
+    & \leq 1-\lambda_{max}(\mathbf{B}^\top \mathbf{B}).
+\end{align}
 
 The second method comes from Neubert $et~al$.\footnote{Neubert MG $et~al$. (2009) $Ecology$ 90:2683–2688}, wherein reactivity is
 
-\begin{equation}
-\log ||\mathbf{B}||_2 = \log \sqrt{\lambda_{max}(\mathbf{B}^\top \mathbf{B})} = \log \sigma_{max} (\mathbf{B}),
-\end{equation}
+\begin{align}
+\nu &= \log ||\mathbf{B}||_2 \\
+    &= \log \sqrt{\lambda_{max}(\mathbf{B}^\top \mathbf{B})} \\
+    &= \log \sigma_{max} (\mathbf{B}),
+\end{align}
 
 and $||\cdot||_2$ is the spectral norm, $\lambda_{max}(\cdot)$ is the maximum eigenvalue, and $\sigma_{max}(\cdot)$ is the largest singular value. This method only requires estimates of the species interactions in $\mathbf{B}$.
 
