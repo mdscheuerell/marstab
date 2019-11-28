@@ -124,38 +124,25 @@ Bz <- z * as.vector(BB[,3] %*% z)
 Cz <- CC %*% z
 
 
-ee <- c(0,0,0)
+par(mfrow=c(1,2))
 
 clr <- c("red", "orange", "blue")
 
-x <- c(1,0,0)
-y <- c(0,1,0)
-z <- c(0,0,1)
 
-arrows3D(ee, ee, ee, x1 = x, y1 = y, z1 = z,  
-         phi = 0, theta = 45, lwd = 2,
-         col = clr, bty = "n", type = "triangle")
-
-text3D(x, y, z, c(expression(B[1]), expression(B[2]), expression(B[3])),
-       phi = 0, theta = 45,
-       col = NULL, NAcol = "white",  breaks = NULL,
-       colkey = NULL, panel.first = NULL, 
-       clim = NULL, clab = NULL, 
-       bty = "n", add = TRUE, plot = TRUE)
-
-
+## PLOT 1: B matrix in 3D
 ee <- rep(0,6)
-aa <- cbind(diag(3), BB)
+aa <- cbind(diag(c(0.8,0.5,0.5)), BB)
+# aa <- cbind(diag(c(1,1,1)), BB)
 
 x <- aa[1,]
 y <- aa[2,]
 z <- aa[3,]
 
 segments3D(ee, ee, ee, x1 = x, y1 = y, z1 = z,  
-         phi = 0, theta = 45, lwd = 2,
+         phi = 0, theta = 60, lwd = 2,
          col = c(rep("gray",3), clr), bty = "n")
 
-text3D(x, y, z, c("x", "y", "z",
+text3D(1.03*x, 1.03*y, 1.05*z, c("x", "y", "z",
                   expression(B[1]), expression(B[2]), expression(B[3])),
        phi = 0, theta = 45,
        col = NULL, NAcol = "white",  breaks = NULL,
@@ -164,10 +151,29 @@ text3D(x, y, z, c("x", "y", "z",
        bty = "n", add = TRUE, plot = TRUE)
 
 
-segments3D(0, 0, 0, x1 = ovec[1], y1 = ovec[2], z1 = 1.2*ovec[3],  
-         phi = 0, theta = 60, lwd = 2, add = TRUE,
-         col = "black", bty = "n", type = "triangle")
-segments3D(0, 0, 0, x1 = -ovec[1], y1 = -ovec[2], z1 = -1.2*ovec[3],  
-         phi = 0, theta = 60, lwd = 2, add = TRUE,
-         col = "darkgray", bty = "n", type = "triangle")
+
+## PLOT 2: orthogonal vector to B1 & B2
+ee <- rep(0,3)
+
+x <- BB[1,]
+y <- BB[2,]
+z <- BB[3,]
+
+segments3D(ee, ee, ee, x1 = x, y1 = y, z1 = z,  
+           phi = 0, theta = 60, lwd = 2,
+           col = clr, bty = "n")
+
+text3D(1.03*x, 1.03*y, 1.05*z, c(expression(B[1]), expression(B[2]), expression(B[3])),
+       phi = 0, theta = 45,
+       col = NULL, NAcol = "white",  breaks = NULL,
+       colkey = NULL, panel.first = NULL, 
+       clim = NULL, clab = NULL, 
+       bty = "n", add = TRUE, plot = TRUE)
+
+
+segments3D(x0 = -ovec[1], y0 = -ovec[2], z0 = -1.2*ovec[3],
+           x1 = ovec[1], y1 = ovec[2], z1 = 1.2*ovec[3],  
+         phi = 0, theta = 45, lwd = 2, add = TRUE,
+         col = "black", bty = "n")
+
 
