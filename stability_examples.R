@@ -164,16 +164,14 @@ segments3D(ee, ee, ee, x1 = x, y1 = y, z1 = z,
            col = clr, bty = "n")
 
 text3D(1.03*x, 1.03*y, 1.05*z, c(expression(B[1]), expression(B[2]), expression(B[3])),
-       phi = 0, theta = 45,
-       col = NULL, NAcol = "white",  breaks = NULL,
-       colkey = NULL, panel.first = NULL, 
-       clim = NULL, clab = NULL, 
-       bty = "n", add = TRUE, plot = TRUE)
+       add = TRUE, plot = TRUE)
 
 
 segments3D(x0 = -ovec[1], y0 = -ovec[2], z0 = -1.2*ovec[3],
            x1 = ovec[1], y1 = ovec[2], z1 = 1.2*ovec[3],  
-         phi = 0, theta = 45, lwd = 2, add = TRUE,
-         col = "black", bty = "n")
+           lwd = 2, add = TRUE,
+           col = "black", bty = "n")
 
+text3D(x = 1.2*ovec[1], y = 1.2*ovec[2], z = 1.2*ovec[3], expression(O[3]),
+       add = TRUE, plot = TRUE)
 
