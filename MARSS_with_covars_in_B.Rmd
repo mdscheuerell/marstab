@@ -10,11 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 \begin{center}
-\textbf{Mark D. Scheuerell} \\
-\text{Northwest Fisheries Science Center} \\
-\text{National Oceanic and Atmospheric Administration} \\
-\text{Seattle WA USA} \\
-\text{mark.scheuerell@noaa.gov}
+\textbf{Mark Scheuerell} \\
 \end{center}
 
 # Standard MARSS model
@@ -36,7 +32,7 @@ where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\
 This process model can be used within a state-space framework wherein we add a second model for the observed data $\mathbf{y}$, such that
 
 $$
-\mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t,
+\mathbf{y}_t = \mathbf{Z} \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t,
 $$
 
 $\mathbf{a}$ is an $n \times 1$ vector of offsets, and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors; $\mathbf{v}_t \sim \text{MVN}(\mathbf{0}, \mathbf{R})$. Note that if the variates in $\mathbf{y}$ have been scaled to have zero mean, then $\mathbf{a}$ can be dropped from the equation.
@@ -58,15 +54,17 @@ $$
 \begin{bmatrix}
     \mathbf{x}_t \\
     \mathbf{c}_{t-h}
-\end{bmatrix},
+\end{bmatrix}
 $$
+
+and
 
 $$
 \mathbf{B}^* = 
 \begin{bmatrix}
     \mathbf{B} & \mathbf{C}\\
     \mathbf{0} & \mathbf{0}
-\end{bmatrix},
+\end{bmatrix}.
 $$
 
 Here $\mathbf{I}_p$ is a $p \times p$ identity matrix. Thus, these vectors and matrices will have new dimensions, such that $\mathbf{x}_t^*$ is $(n + p) \times 1$, $\mathbf{B}_t^*$ is $(n + p) \times (n + p)$, and $\mathbf{Q}_t^*$ is also $(n + p) \times (n + p)$.
@@ -100,9 +98,10 @@ and the $p \times p$ matrix $\mathbf{S}$ contains the variances of each of the $
 \begin{equation}
 \mathbf{S} = 
 \begin{bmatrix}
-    \text{Var}(c_1) & & {\text{\huge0}}\\
-    & \ddots &  \\
-    {\text{\huge0}}&  & \text{Var}(c_p)
+    \text{Var}(c_1) & 0 & \cdots & 0 \\
+    0 & \text{Var}(c_2) & \ddots & \vdots \\
+    \vdots & \ddots & \ddots & 0 \\
+    0 & \cdots & 0 & \text{Var}(c_p)
 \end{bmatrix}.
 \end{equation}
 
@@ -111,7 +110,7 @@ and the $p \times p$ matrix $\mathbf{S}$ contains the variances of each of the $
 The observation equation is rewritten as
 
 $$
-\mathbf{y}_t^* = \mathbf{x}_t^* + \mathbf{a}^* + \mathbf{v}_t^* ~ \text{with} ~ \mathbf{v}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{R}^*),
+\mathbf{y}_t^* = \mathbf{Z}^* \mathbf{x}_t^* + \mathbf{a}^* + \mathbf{v}_t^* ~ \text{with} ~ \mathbf{v}_t^* \sim \text{MVN}(\mathbf{0}, \mathbf{R}^*),
 $$
 
 with
@@ -125,6 +124,16 @@ $$
 $$
 
 $$
+\mathbf{Z}^* = 
+\begin{bmatrix}
+    \mathbf{Z}_\mathbf{y} & \mathbf{0} \\
+    \mathbf{0} & \mathbf{Z}_\mathbf{C}
+\end{bmatrix},
+$$
+
+and
+
+$$
 \mathbf{R}^* = 
 \begin{bmatrix}
     \mathbf{R} & \mathbf{0}\\
@@ -132,7 +141,7 @@ $$
 \end{bmatrix}. 
 $$
 
-These new vectors and matrices will have dimensions where $\mathbf{y}_t^*$ is an $(n + p) \times 1$ column vector and $\mathbf{R}_t^*$ is an $(n + p) \times (n + p)$ matrix.
+These new vectors and matrices will have dimensions where $\mathbf{y}_t^*$ is an $(n + p) \times 1$ column vector, $\mathbf{Z}^*$ is an $(n + p) \times (n - k + p - l)$ matrix, and $\mathbf{R}_t^*$ is an $(n + p) \times (n + p)$ matrix. Note that $0 \leq k < n$ and $0 \leq l < p$, such that either $\mathbf{Z}_\mathbf{y}$ or $\mathbf{Z}_\mathbf{C}$ could range from a column vector of 1's if $k = n - 1$ or $l = p - 1$, respectively, to identity matrices if $k = 0$ or $l = 0$.
 
 ### Option 1
 
