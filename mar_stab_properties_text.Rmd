@@ -13,25 +13,27 @@ knitr::opts_chunk$set(echo = TRUE, size="small")
   \begin{Large}
   \textbf{Mark D. Scheuerell} \\
   \end{Large}
-  \text{Northwest Fisheries Science Center} \\
-  \text{National Oceanic and Atmospheric Administration} \\
+  \text{U.S. Geological Survey} \\
+  \text{Washington Cooperative Fish and Wildlife Research Unit} \\
+  \text{School of Aquatic and Fishery Sciences} \\
+  \text{University of Washington} \\
   \text{Seattle, WA USA} \\
-  \text{mark.scheuerell@noaa.gov}
+  \text{scheuerl@uw.edu}
 \end{center}
 
 # Background
 
-There is growing interest in the use of first-order vector autoregressive models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models\footnote{Ives AR $et \ al$. (2003) $Ecol~Monogr$ 73:301–330}. In particular, MAR(1) models have been used to estimate interactions among various members in a food web and evaluate overall community stability.
-
-The general form of a MAR(1) model is
+There is growing interest in the use of first-order vector autoregressive models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models\footnote{Ives AR $et \ al$. (2003) $Ecol~Monogr$ 73:301–330}. In particular, MAR(1) models have been used to estimate interaction strengths among various members in a food web and evaluate overall community stability. The general form of a MAR(1) model is
 
 \begin{equation} \label{eq1}
-  \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t,
+  \mathbf{x}_t = \mathbf{m} + \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{m}) + \mathbf{w}_t,
 \end{equation}
 
-where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{B}$ is an $n \times n$ transition matrix, and $\mathbf{w}_t$ is an $n \times 1$ vector of multivariate normal process errors; $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
+where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{m}$ is an $n \times 1$ vector containing the means of the rows of the $x \times t$ matrix $\mathbf{x}$, $\mathbf{B}$ is an $n \times n$ transition matrix, and $\mathbf{w}_t$ is an $n \times 1$ vector of process errors. Here I assume the values in $\mathbf{w}_t$ are drawn from a multivariate normal distribution, such that $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
 
-Often we would like to examine the potential effects of covariates on community dynamics. In that case, the MAR(1) model becomes
+In ecological applications of MAR(1) models, the $x_{i,t}$ values within $\mathbf{x}_t$ represent the log-density (or biomass) of a species or functional group at time $t$. Each of the $b_{ij}$ values within $\mathbf{B}$ represents the effect of species $j$ on species $i$, such that the values along the diagonal of $\mathbf{B}$ (i.e., where $i = j$) give strength of density-dependence.
+
+Often we would also like to infer the possible effects of covariates on the various members of the community. In addition, for computational purposes the data are often standardized to have a mean of zero $(\mathbf{x}_i - \bar{\mathbf{x}}_i)$, such that $\mathbf{m}$ in Eqn (1) is then set to zero. In that case, the MAR(1) model becomes
 
 \begin{equation} \label{eq2}
 \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_t + \mathbf{w}_t, \\
@@ -42,10 +44,10 @@ where $\mathbf{C}$ is an $n \times p$ matrix of covariate effects, and $\mathbf{
 This MAR(1) model can also be used as part of a state-space model, wherein the observed data $\mathbf{y}$ are an imperfect sample of the true realizations $\mathbf{x}$, such that
 
 \begin{equation} \label{eq3}
-  \mathbf{y}_t = \mathbf{x}_t + \mathbf{a} \mathbf{v}_t,
+  \mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t,
 \end{equation}
 
-$\mathbf{a}$ is an $n \times 1$ vector of offsets (levels) to account for non-zero means in $\mathbf{y}$, and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors. When combined, Eqns \eqref{eq1} and \eqref{eq3} form a state-space model:
+$\mathbf{a}$ is an $n \times 1$ vector of offsets (levels) to account for non-zero means in $\mathbf{y}$, and $\mathbf{v}_t$ is an $n \times 1$ vector of observation errors. When combined, Eqns \eqref{eq1} and \eqref{eq3} form a full state-space model:
 
 \begin{equation} \label{eq4}
   \begin{gathered}
