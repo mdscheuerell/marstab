@@ -31,16 +31,12 @@ There is growing interest in the use of first-order vector autoregressive models
 
 where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{m}$ is an $n \times 1$ vector containing the means of the rows of the $x \times t$ matrix $\mathbf{x}$, $\mathbf{B}$ is an $n \times n$ transition matrix, and $\mathbf{w}_t$ is an $n \times 1$ vector of process errors. Here I assume the values in $\mathbf{w}_t$ are drawn from a multivariate normal distribution, such that $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
 
-In ecological applications of MAR(1) models, the $x_{i,t}$ values within $\mathbf{x}_t$ represent the log-density (or biomass) of a species or functional group at time $t$. Each of the $b_{ij}$ values within $\mathbf{B}$ represents the effect of species $j$ on species $i$, such that the values along the diagonal of $\mathbf{B}$ (i.e., where $i = j$) give strength of density-dependence.
-
-Often we would also like to infer the possible effects of covariates on the various members of the community. In addition, for computational purposes the data are often standardized to have a mean of zero $(\mathbf{x}_i - \bar{\mathbf{x}}_i)$, such that $\mathbf{m}$ in Eqn (1) is then set to zero. In that case, the MAR(1) model becomes
+In ecological applications of MAR(1) models, the $x_{i,t}$ values within $\mathbf{x}_t$ represent the log-density (or biomass) of a species or functional group at time $t$. Each of the $b_{ij}$ values within $\mathbf{B}$ represents the effect of species $j$ on species $i$, such that the values along the diagonal of $\mathbf{B}$ (i.e., where $i = j$) give strength of density-dependence. In addition, for computational purposes the data are often standardized to have a mean of zero $(\mathbf{x}_i - \bar{\mathbf{x}}_i)$, such that $\mathbf{m}$ in Eqn (1) is then set to zero. In that case, the MAR(1) model becomes
 
 \begin{equation} \label{eq2}
-\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_t + \mathbf{w}_t, \\
+    \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t
 \end{equation}
-
-where $\mathbf{C}$ is an $n \times p$ matrix of covariate effects, and $\mathbf{c}_t$ is a $p \times 1$ vector of covariates at time $t$.
-
+    
 This MAR(1) model can also be used as part of a state-space model, wherein the observed data $\mathbf{y}$ are an imperfect sample of the true realizations $\mathbf{x}$, such that
 
 \begin{equation} \label{eq3}
@@ -51,7 +47,7 @@ $\mathbf{a}$ is an $n \times 1$ vector of offsets (levels) to account for non-ze
 
 \begin{equation} \label{eq4}
   \begin{gathered}
-    \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_t + \mathbf{w}_t \\
+    \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t \\
     \mathbf{y}_t = \mathbf{x}_t + \mathbf{a} + \mathbf{v}_t
   \end{gathered}
 \end{equation}
@@ -60,21 +56,9 @@ Following Holmes $et~al$.\footnote{Holmes EE $et~al$. (2012) $The~R~Journal$ 4:1
 
 # Variance of the stationary distribution
 
-We will restrict this treatment to stationary models wherein all of the eigenvalues of $\mathbf{B}$ lie within the unit circle. In that case, the probability distribution of $\mathbf{x}_t$ as $t \rightarrow \infty$ is called the stationary distribution. Thus, because $\lim_{t\to\infty} t-1 = t$, under assumptions of stationarity we can write (\ref{eq1}) as
+Here I will consider only stationary models wherein all of the eigenvalues of $\mathbf{B}$ lie outside the unit circle. Under this assumption, the probability distribution of $\mathbf{x}_t$ as $t \rightarrow \infty$ is called the *stationary distribution*. Let's define $\mathbf{\Sigma}$ to be the covariance matrix of the stationary distribution, so that it follows from Eqn (2) that  
 
 \begin{equation} \label{eq5}
-\mathbf{x}_t = \mathbf{B} \mathbf{x}_t + \mathbf{w}_t.
-\end{equation}
-
-From this, it follows that
-
-\begin{equation} \label{eq6}
-\rm cov(\mathbf{x}_t) = \mathbf{B} cov(\mathbf{x}_t) \mathbf{B}^\top + cov(\mathbf{w}_t).
-\end{equation}
-
-If we define $\mathbf{\Sigma} = \rm cov(\mathbf{x}_t)$, then
-
-\begin{equation} \label{eq7}
 \mathbf{\Sigma} = \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}.
 \end{equation}
 
@@ -100,17 +84,36 @@ then
 \end{bmatrix}.
 \end{equation*}
 
-Thus, if $\mathbf{I}$ is an $n \times n$ identity matrix, and we define $\mathcal{I} = \mathbf{I} \otimes \mathbf{I}$ and $\mathcal{B} = \mathbf{B} \otimes \mathbf{B}$, then
+Thus, if $\mathbf{I}$ is an $n \times n$ identity matrix, and we define $\tilde{\mathbf{I}} = \mathbf{I} \otimes \mathbf{I}$ and $\tilde{\mathbf{B}} = \mathbf{B} \otimes \mathbf{B}$, then
 
 \begin{equation} \label{eq8}
-\text{vec}(\mathbf{\Sigma}) = (\mathcal{I} - \mathcal{B})^{-1} \text{vec}(\mathbf{Q}).
+\text{vec}(\mathbf{\Sigma}) = (\tilde{\mathbf{I}} - \tilde{\mathbf{B}})^{-1} \text{vec}(\mathbf{Q}).
 \end{equation}
 
 # Importance of species interactions to stability
 
-Among the many ways of classifying stability, I am interested in the extent to which community interactions, relative to environmental forcing, contribute to the overall variance of the stationary distribution. In a stable system, any perturbation affecting one or more of the community members does not amplify as it moves throughout the community as a whole, such that the variances in log-densities over time would be driven almost entirely by random environmental variation. Given that same magnitude of random environmental variation, less stable systems are characterized by greater variances in the temporal dynamics of their constituents.
+Among the many ways of classifying stability, I am interested in the extent to which community interactions, relative to environmental forcing, contribute to the overall variance of the stationary distribution. Here it's helpful to first consider a one-dimensional system given by
 
-Here we will use determinants to measure the "volume" of a matrix. Looking back to (\ref{eq7}), we see that
+\begin{equation} \label{eq9}
+x_t = b x_{t-1} + w_t
+\end{equation}
+
+where $b$ is the strength of density dependence, the stationary variance of $x_t$ is $\sigma$, and the variance of $w_t$ is $q$. Analogous to Eqn (5), the variance of both sides of Eqn (\ref{eq9}) is given by
+
+\begin{equation} \label{eq10a}
+\sigma = b^2 \sigma + q
+\end{equation}
+
+such that the proportion of $\sigma$ owing to the one species' interaction with itself is then
+
+\begin{equation} \label{eq10}
+\frac{\sigma - q}{\sigma} = b^2.
+\end{equation}
+
+
+From Eqn (6) we can see that the species interactions strengths in $\mathbf{B}$ magnify the variable effects of the environment in $\mathbf{Q}$. Thus, the difference in the "volumes" of $\mathbf{\Sigma}$ and $\mathbf{Q}$ gives an indication of the degree to which species interactions inflate the environmental variance.
+
+Here we will use determinants to measure the volume of a matrix. Looking back to (\ref{eq5}), we see that
 
 \begin{align}
 \mathbf{\Sigma} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}, \nonumber \\
@@ -132,6 +135,14 @@ By rearranging terms the proportion of the volume of $\mathbf{\Sigma}$ attributa
 \end{equation}
 
 ## The effects of covariates
+
+Often we would also like to infer the possible effects of covariates on the various members of the community. In that case, the MAR(1) model
+
+\begin{equation} \label{eq2}
+\mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{C} \mathbf{c}_t + \mathbf{w}_t, \\
+\end{equation}
+
+where $\mathbf{C}$ is an $n \times p$ matrix of covariate effects, and $\mathbf{c}_t$ is a $p \times 1$ vector of covariates at time $t$.
 
 Although the variance of the stationary distrbution will be affected by any covariate effects, the method described above for estimating the relative effects of species interactions is unaffected. That is, if $\mathbf{\Xi}$ is the variance-covariance matrix of the covariates in $\mathbf{c}$, then analogous to (\ref{eq9}) the variance of the stationary distribution will be
 
