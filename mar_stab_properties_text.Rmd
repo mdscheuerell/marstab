@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE, size="small")
 
 # Background
 
-There is growing interest in the use of first-order vector autoregressive models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models\footnote{Ives AR $et \ al$. (2003) $Ecol~Monogr$ 73:301–330}. In particular, MAR(1) models have been used to estimate interaction strengths among various members in a food web and evaluate overall community stability. The general form of a MAR(1) model is
+There is growing interest in the use of first-order vector autoregressive models in ecology where they are often referred to as multivariate autoregressive, or MAR(1), models\footnote{Ives $et~al$. (2003) $Ecol~Monogr$ 73:301–330}. In particular, MAR(1) models have been used to estimate interaction strengths among various members in a food web and evaluate overall community stability. The general form of a MAR(1) model is
 
 \begin{equation} \label{eq1}
   \mathbf{x}_t = \mathbf{m} + \mathbf{B} (\mathbf{x}_{t-1} - \mathbf{m}) + \mathbf{w}_t,
@@ -31,7 +31,7 @@ There is growing interest in the use of first-order vector autoregressive models
 
 where $\mathbf{x}_t$ is an $n \times 1$ vector of state variates at time $t$, $\mathbf{m}$ is an $n \times 1$ vector containing the means of the rows of the $x \times t$ matrix $\mathbf{x}$, $\mathbf{B}$ is an $n \times n$ transition matrix, and $\mathbf{w}_t$ is an $n \times 1$ vector of process errors. Here I assume the values in $\mathbf{w}_t$ are drawn from a multivariate normal distribution, such that $\mathbf{w}_t \sim \text{MVN}(\mathbf{0}, \mathbf{Q})$.
 
-In ecological applications of MAR(1) models, the $x_{i,t}$ values within $\mathbf{x}_t$ represent the log-density (or biomass) of a species or functional group at time $t$. Each of the $b_{ij}$ values within $\mathbf{B}$ represents the effect of species $j$ on species $i$, such that the values along the diagonal of $\mathbf{B}$ (i.e., where $i = j$) give strength of density-dependence. In addition, for computational purposes the data are often standardized to have a mean of zero $(\mathbf{x}_i - \bar{\mathbf{x}}_i)$, such that $\mathbf{m}$ in Eqn (1) is then set to zero. In that case, the MAR(1) model becomes
+In ecological applications of MAR(1) models, the $x_{i,t}$ values within $\mathbf{x}_t$ represent the log-density (or biomass) of a species or functional group at time $t$. Each of the $b_{ij}$ values within $\mathbf{B}$ represents the effect of species $j$ on species $i$, such that the values along the diagonal of $\mathbf{B}$ (i.e., where $i = j$) give strength of density-dependence. In addition, for computational purposes the data are often standardized to have a mean of zero $(\mathbf{x}_i - \bar{x}_i)$, such that $\mathbf{m}$ in Eqn (1) is then set to zero. In that case, the MAR(1) model becomes
 
 \begin{equation} \label{eq2}
     \mathbf{x}_t = \mathbf{B} \mathbf{x}_{t-1} + \mathbf{w}_t
@@ -52,7 +52,7 @@ $\mathbf{a}$ is an $n \times 1$ vector of offsets (levels) to account for non-ze
   \end{gathered}
 \end{equation}
 
-Following Holmes $et~al$.\footnote{Holmes EE $et~al$. (2012) $The~R~Journal$ 4:11-19}, I will refer to (\ref{eq4}) as a MARSS model, where SS stands for state-space, and we drop the parenthetic lag-1 identifier for convenience.
+Following Holmes $et~al$.\footnote{Holmes $et~al$. (2012) $The~R~Journal$ 4:11-19}, I will refer to (\ref{eq4}) as a MARSS model, where SS stands for state-space, and we drop the parenthetic lag-1 identifier for convenience.
 
 # Variance of the stationary distribution
 
@@ -92,28 +92,29 @@ Thus, if $\mathbf{I}$ is an $n \times n$ identity matrix, and we define $\tilde{
 
 # Importance of species interactions to stability
 
-Among the many ways of classifying stability, I am interested in the extent to which community interactions, relative to environmental forcing, contribute to the overall variance of the stationary distribution. Here it's helpful to first consider a one-dimensional system given by
+Among the many ways of classifying stability, I am interested in the extent to which community interactions, relative to environmental forcing, contribute to the overall variance of the stationary distribution. It is helpful to first consider a model for a single species given by
 
 \begin{equation} \label{eq9}
 x_t = b x_{t-1} + w_t
 \end{equation}
 
-where $b$ is the strength of density dependence, the stationary variance of $x_t$ is $\sigma$, and the variance of $w_t$ is $q$. Analogous to Eqn (5), the variance of both sides of Eqn (\ref{eq9}) is given by
+where $b$ is the strength of density dependence, the stationary variance of $x_t$ is $\sigma$, and the variance of $w_t$ is $q$. Analogous to Eqn (5), the variance of both sides of Eqn (7) is given by
 
 \begin{equation} \label{eq10a}
-\sigma = b^2 \sigma + q
+\sigma = b^2 \sigma + q.
 \end{equation}
 
-such that the proportion of $\sigma$ owing to the one species' interaction with itself is then
+We can rearrange the terms in Eqn (\ref{eq10a}) to express the proportion of $\sigma$ owing to the one species' interaction with itself, $\pi_b$, as
 
 \begin{equation} \label{eq10}
-\frac{\sigma - q}{\sigma} = b^2.
+\pi_b = \frac{\sigma - q}{\sigma} = b^2.
 \end{equation}
 
+The size or magnitude of a scalar is just the value itself, but in a multidimensional community we need a way to measure the "volume" of the matrices describing the various interactions among the members $(\mathbf{B})$ and the (co)variances of the distributions $(\mathbf{\Sigma}, \mathbf{Q})$. The determinant of a matrix provides a convenient way to do so\footnote{Ives $et~al$. (2003) $Ecol~Monogr$ 73:301–330}.
 
-From Eqn (6) we can see that the species interactions strengths in $\mathbf{B}$ magnify the variable effects of the environment in $\mathbf{Q}$. Thus, the difference in the "volumes" of $\mathbf{\Sigma}$ and $\mathbf{Q}$ gives an indication of the degree to which species interactions inflate the environmental variance.
+For example, consider
 
-Here we will use determinants to measure the volume of a matrix. Looking back to (\ref{eq5}), we see that
+Looking back to (\ref{eq5}), we see that
 
 \begin{align}
 \mathbf{\Sigma} &= \mathbf{B} \mathbf{\Sigma} \mathbf{B}^\top + \mathbf{Q}, \nonumber \\
@@ -171,7 +172,7 @@ Thus, we can ask whether the proportion $\pi_\mathbf{B}$ is most sensitive to in
 
 # Long-term changes in abundance
 
-Ives $et~al$.\footnote{Ives AR $et~al$. (1999) $Ecology$ 80:1405–1421} provide a means for assessing the expected long-term change in the density (biomass) of species $i$, $L_i$, within a community of $n$ total members, owing to the effect of some covariate $j$. Specifically,
+Ives $et~al$.\footnote{Ives $et~al$. (1999) $Ecology$ 80:1405–1421} provide a means for assessing the expected long-term change in the density (biomass) of species $i$, $L_i$, within a community of $n$ total members, owing to the effect of some covariate $j$. Specifically,
 
 \begin{equation}
 L_i = \frac{\text{det}(\mathbf{B}_1 \dots \mathbf{B}_{i-1} \mathbf{C}_j \mathbf{B}_{i+1} \dots \mathbf{B}_n)}{\text{det}(\mathbf{B}_1 \dots \mathbf{B}_n)},
@@ -183,14 +184,14 @@ where $\mathbf{B}_i$ is a $n \times 1$ column vector containing the estimated ef
 
 We can also calculate the reactivity of a community following an external perturbation, which measures the displacement of the community away from its stationary distribution. There are two methods to do so.
 
-The first follows Ives $et~al$.\footnote{Ives AR $et \ al$. (2003) $Ecol~Monogr$ 73:301–330}, where reactivity is based upon estimates of the process covariance $\mathbf{Q}$ and stationary covariance $\mathbf{\Sigma}$. Specifically, they define reactivity $\nu$ as
+The first follows Ives $et~al$.\footnote{Ives $et~al$. (2003) $Ecol~Monogr$ 73:301–330}, where reactivity is based upon estimates of the process covariance $\mathbf{Q}$ and stationary covariance $\mathbf{\Sigma}$. Specifically, they define reactivity $\nu$ as
 
 \begin{align}
 \nu &= \displaystyle -\frac{\text{tr}(\mathbf{Q})}{\text{tr}(\mathbf{\Sigma})} \\
     & \leq 1-\lambda_{max}(\mathbf{B}^\top \mathbf{B}).
 \end{align}
 
-The second method comes from Neubert $et~al$.\footnote{Neubert MG $et~al$. (2009) $Ecology$ 90:2683–2688}, wherein reactivity is
+The second method comes from Neubert $et~al$.\footnote{Neubert $et~al$. (2009) $Ecology$ 90:2683–2688}, wherein reactivity is
 
 \begin{align}
 \nu &= \log ||\mathbf{B}||_2 \\
