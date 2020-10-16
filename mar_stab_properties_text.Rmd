@@ -3,6 +3,8 @@ title: "Stability properties for MAR(1) models"
 output: pdf_document
 fontsize: 10pt
 geometry: margin=1.25in
+header-includes:
+   - \usepackage{xcolor}
 ---
 
 ```{r setup, include=FALSE}
@@ -110,9 +112,94 @@ We can rearrange the terms in Eqn (\ref{eq10a}) to express the proportion of $\s
 \pi_b = \frac{\sigma - q}{\sigma} = b^2.
 \end{equation}
 
+## Using matrix determinants
+
 The size or magnitude of a scalar is just the value itself, but in a multidimensional community we need a way to measure the "volume" of the matrices describing the various interactions among the members $(\mathbf{B})$ and the (co)variances of the distributions $(\mathbf{\Sigma}, \mathbf{Q})$. The determinant of a matrix provides a convenient way to do so\footnote{Ives $et~al$. (2003) $Ecol~Monogr$ 73:301–330}.
 
-For example, consider
+For example, consider a cube where the length of each of its sides equals 2 units. The volume of this cube is $2 \times 2 \times 2 = 8 ~ \text{units}^3$. We can also define this cube with three vectors, $[x ~ y ~ z]$, each of which defines one of the cube's vertices.
+
+\vspace{0.25in}
+
+```{r plot_cube, fig.dim = c(3, 3), echo = FALSE, fig.align = "center"}
+par(mai = rep(0.5, 4), omi = rep(0, 4))
+
+plot(c(0, 4), c(0, 4), asp = 1, xlim = c(0,4), ylim = c(0,4), type = "n",
+     xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n")
+
+segments(0, 2, 1, 2 + 1, lwd = 1, col = "darkgray")
+segments(0, 2, 2, 2, lwd = 1, col = "darkgray")
+segments(2, 0, 2, 2, lwd = 1, col = "darkgray")
+segments(1, 1, 1, 2 + 1, lwd = 1, col = "darkgray")
+segments(1, 2 + 1, 2 + 1, 2 + 1, lwd = 1, col = "darkgray")
+segments(2, 2, 2 + 1, 2 + 1, lwd = 1, col = "darkgray")
+segments(2, 0, 2 + 1, 1, lwd = 1, col = "darkgray")
+segments(2 + 1, 1, 2 + 1, 2 + 1, lwd = 1, col = "darkgray")
+segments(1, 1, 2 + 1, 1, lwd = 1, col = "darkgray")
+
+arrows(0, 0, 2, 0, length = 0.1, lwd = 2, col = "blue")
+arrows(0, 0, 1, 1, length = 0.1, lwd = 2, col = "red")
+arrows(0, 0, 0, 2, length = 0.1, lwd = 2, col = "purple")
+
+text(2, 0, "[2,0,0]", xpd = NA, cex = 0.8, pos = 1, col = "blue")
+text(1, 1, "[0,2,0]", xpd = NA, cex = 0.8, pos = 3, col = "red")
+text(0, 2, "[0,0,2]", xpd = NA, cex = 0.8, pos = 2, col = "purple")
+```
+
+\vspace{0.25in}
+
+We can combine these three vectors into a square matrix where each of the columns defines a vertex, such that
+
+\begin{equation*}
+\mathbf{K} = 
+\begin{bmatrix}
+\textcolor{blue}{2} & \textcolor{red}{0} & \textcolor{purple}{0} \\
+\textcolor{blue}{0} & \textcolor{red}{2} & \textcolor{purple}{0} \\
+\textcolor{blue}{0} & \textcolor{red}{0} & \textcolor{purple}{2}
+\end{bmatrix}
+\end{equation*}
+
+The determinant of $\mathbf{K}$ gives the volume of this cube. The determinant of a $2 \times 2$ matrix is
+
+\begin{equation*}
+\text{det} \begin{bmatrix}
+a & b \\
+c & d
+\end{bmatrix}
+= ad - bc
+\end{equation*}
+
+and the determinant of a $3 \times 3$ matrix is given by
+
+\begin{equation*}
+\begin{aligned}
+\text{det} \begin{bmatrix}
+a & b & c \\
+d & e & f \\
+g & h & i
+\end{bmatrix} &= a ~ \text{det} \begin{bmatrix}
+e & f \\
+h & i
+\end{bmatrix} -b ~ \text{det} \begin{bmatrix}
+d & f \\
+g & i
+\end{bmatrix} +c ~ \text{det} \begin{bmatrix}
+d & e \\
+g & h
+\end{bmatrix} \\
+&= a (e i - f h) + b (f g - d i) + c (d h - e g)
+\end{aligned}
+\end{equation*}
+
+Thus, the volume of the cube defined by $\mathbf{K}$ is 
+
+\begin{equation*}
+\begin{aligned}
+\text{det}(\mathbf{K}) &= 2(2 \cdot 2 - 0 \cdot 0) + 0(0 \cdot 0 - 0 \cdot 2) + 0(0 \cdot 0 - 2 \cdot 0) \\
+  &= 2(4 - 0) + 0(0 - 0) + 0(0 - 0) \\
+  &= 8
+\end{aligned}
+\end{equation*}
+
 
 Looking back to (\ref{eq5}), we see that
 
